@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>经营游戏科技/研发系统设计总览表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 添加html2pdf.js库用于PDF导出 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f0f2f5; /* 更柔和的背景色 */
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px; /* 增加容器宽度 */
+        }
+
+        header h1 {
+            color: #2c3e50; /* 深色标题 */
+        }
+        
+        /* 提升卡片样式 */
+        .section-card {
+            background-color: #ffffff;
+            border-radius: 12px; /* 更圆润的圆角 */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 更柔和的阴影 */
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #e0e0e0; /* 增加边框 */
+        }
+        
+        .section-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* 悬停时更明显的阴影 */
+            transform: translateY(-3px); /* 轻微上浮效果 */
+        }
+        
+        /* 折叠/展开动画 */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.4s ease-out; /* 添加透明度过渡 */
+            opacity: 0;
+            padding-top: 0; /* 初始无内边距 */
+            padding-bottom: 0;
+        }
+        
+        /* 当card有 expanded 类时展开内容 */
+        .section-card.expanded .collapsible-content {
+            max-height: 2000px; /* 足够大的值 */
+            opacity: 1;
+            transition: max-height 0.6s ease-in, opacity 0.6s ease-in;
+            padding-top: 1rem; /* 展开后增加内边距 */
+        }
+        
+        .section-header {
+            cursor: pointer;
+            padding: 1rem 0; /* 增加点击区域 */
+            display: flex; /* 确保flex布局 */
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .rotate-icon {
+            transition: transform 0.4s ease;
+        }
+        
+        /* 当card有 expanded 类时旋转图标 */
+        .section-card.expanded .rotate-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* 表单元素样式 */
+        input[type="text"], textarea, select, input[type="date"] {
+            width: 100%;
+            padding: 0.75rem 1rem; /* 增大内边距 */
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem; /* 更圆润的边角 */
+            background-color: #fdfdfd; /* 略白的背景色 */
+            font-size: 1rem;
+            color: #333;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        input[type="text"]:focus, textarea:focus, select:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* 柔和的焦点阴影 */
+        }
+
+        /* 标签样式 */
+        label {
+            font-weight: 600; /* 更粗的字体 */
+            color: #4b5563; /* 深灰色 */
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 按钮样式 */
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .bg-blue-600 { background-color: #3b82f6; }
+        .hover\:bg-blue-700:hover { background-color: #2563eb; }
+        .bg-amber-600 { background-color: #d97706; }
+        .hover\:bg-amber-700:hover { background-color: #b45309; }
+        .bg-green-600 { background-color: #10b981; }
+        .hover\:bg-green-700:hover { background-color: #059669; }
+        .bg-red-600 { background-color: #ef4444; }
+        .hover\:bg-red-700:hover { background-color: #dc2626; }
+        .bg-purple-600 { background-color: #9333ea; } /* Added for AI button */
+        .hover\:bg-purple-700:hover { background-color: #7e22ce; }
+        
+        /* 目录样式 */
+        .sticky-sidebar {
+            position: sticky;
+            top: 1rem;
+            z-index: 10;
+        }
+        .sticky-sidebar ul a {
+            padding: 0.5rem 0.75rem;
+            display: block;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, color 0.2s;
+            color: #4b5563;
+        }
+        .sticky-sidebar ul a:hover {
+            background-color: #e0f2fe;
+            color: #1e40af;
+        }
+        .sticky-sidebar ul a.active {
+            background-color: #bfdbfe;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        /* 其他辅助样式 */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            margin: 0.2rem;
+            border-radius: 0.375rem;
+            background-color: #e5e7eb;
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tech-tree-sample, .code-sample {
+            font-family: 'Fira Code', 'Cascadia Code', monospace; /* 更好的等宽字体 */
+            white-space: pre-wrap; /* 允许换行 */
+            word-wrap: break-word; /* 确保长单词也能换行 */
+            overflow: auto;
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            border: 1px solid #e0e0e0;
+            color: #4a5568;
+        }
+
+        /* Chart.js 容器 */
+        canvas {
+            background-color: #f9fafb;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* 警告/提示框 */
+        .alert-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .alert-yellow { background-color: #fffbeb; border-color: #fcd34d; color: #b45309; }
+        .alert-red { background-color: #fef2f2; border-color: #ef4444; color: #dc2626; }
+        .alert-blue { background-color: #eff6ff; border-color: #93c5fd; color: #2563eb; }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.5rem;
+            flex-direction: column;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+        #loading-overlay .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        /* PDF导出时隐藏按钮 */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: #fff;
+                font-family: 'Noto Sans SC', sans-serif !important; /* 确保打印时字体一致 */
+            }
+            .section-card {
+                box-shadow: none;
+                border: none;
+                margin-bottom: 1rem; /* 确保打印时页面间距 */
+            }
+            .collapsible-content {
+                max-height: fit-content !important; /* 强制展开所有内容 */
+                opacity: 1 !important;
+                padding-top: 1rem !important; /* 确保展开后有内边距 */
+            }
+            .section-header .rotate-icon {
+                display: none; /* 打印时隐藏折叠图标 */
+            }
+            h1 input {
+                border: none; /* 打印时游戏名称不显示输入框 */
+            }
+            /* 确保表单元素内容可见 */
+            input, textarea, select {
+                background-color: transparent !important;
+                border: 1px solid #ccc !important;
+                padding: 0.5rem !important;
+            }
+            /* 隐藏图表，或者显示为图片，这里选择隐藏，因为canvas直接打印效果不好 */
+            canvas {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <span>正在生成PDF，请稍候...</span>
+        <span class="text-sm mt-2">（此过程可能需要几秒钟）</span>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800" id="header-game-title">
+                《<input type="text" class="inline-block w-64 text-center border-b-2 border-blue-400 focus:border-blue-600 focus:ring-0 px-2 py-1 text-gray-800" placeholder="游戏名称" id="game-title" name="gameTitle">》科技/研发系统设计总览表
+            </h1>
+            <p class="text-gray-600 mt-3 text-lg">用于设计、记录和评估游戏中的科技/研发系统</p>
+        </header>
+
+        <div class="flex flex-wrap -mx-4">
+            <!-- 左侧栏 - 目录和操作按钮 -->
+            <div class="w-full lg:w-1/4 px-4 mb-8 no-print">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky-sidebar">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">目录</h2>
+                    <ul class="space-y-2">
+                        <li><a href="#basic-info" class="nav-link">1. 科技基本信息</a></li>
+                        <li><a href="#research-requirements" class="nav-link">2. 研发需求设置</a></li>
+                        <li><a href="#tech-effects" class="nav-link">3. 科技效果分析</a></li>
+                        <li><a href="#balance" class="nav-link">4. 平衡性考量</a></li>
+                        <li><a href="#system-integration" class="nav-link">5. 系统联动</a></li>
+                        <li><a href="#visual-narrative" class="nav-link">6. 视觉与叙事呈现</a></li>
+                        <li><a href="#user-experience" class="nav-link">7. 玩家体验</a></li>
+                        <li><a href="#checklist" class="nav-link">8. 完整性检查清单</a></li>
+                        <li><a href="#planning-considerations" class="nav-link">9. 策划考量</a></li>
+                    </ul>
+                    
+                    <div class="mt-8 pt-4 border-t border-gray-200">
+                        <button id="save-btn" class="bg-blue-600 text-white w-full py-2.5 rounded-lg hover:bg-blue-700 transition mb-3">
+                            <i class="fas fa-save mr-2"></i>保存表单 (本地)
+                        </button>
+                        <button id="export-json-btn" class="bg-amber-600 text-white w-full py-2.5 rounded-lg hover:bg-amber-700 transition mb-3">
+                            <i class="fas fa-file-download mr-2"></i>导出为JSON
+                        </button>
+                        <button id="export-pdf-btn" class="bg-green-600 text-white w-full py-2.5 rounded-lg hover:bg-green-700 transition mb-3">
+                            <i class="fas fa-file-pdf mr-2"></i>导出为PDF
+                        </button>
+                        <button id="reset-btn" class="bg-red-600 text-white w-full py-2.5 rounded-lg hover:bg-red-700 transition">
+                            <i class="fas fa-redo mr-2"></i>重置表单
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 text-xs text-gray-500">
+                        <p>注：导出文件将保存至您的默认下载位置。</p>
+                        <p>保存功能基于浏览器本地存储，请勿清空浏览器数据。</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右侧主要内容区 -->
+            <div class="w-full lg:w-3/4 px-4" id="content-area">
+                <div class="bg-white rounded-lg shadow-md p-8 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-5">使用说明与设计原则</h2>
+                    <div class="space-y-4 text-gray-700 text-base">
+                        <p><strong>目的：</strong> 此表旨在为策划提供一个结构化的工具，用于设计、记录和自我评估游戏中的每一项科技。填写完整后，可作为团队内部沟通、平衡性测试和迭代的基础文档。</p>
+                        <p><strong>分层设计：</strong> 鼓励将科技划分为清晰的“时代”、“时期”或“等级”，以控制游戏进程和复杂度的递进，确保玩家的学习曲线平滑且有成就感。同时，应考虑每个层级所需的研发时长和解锁数量是否合理。</p>
+                        <p><strong>策略性选择：</strong> 确保科技树提供有意义的分支和多条发展路径，让玩家的选择具有长远的战略后果，而非存在唯一的最优解。强调科技间的协同效应（Synergy）和取舍（Trade-off）。</p>
+                        <p><strong>价值感知：</strong> 每项科技的解锁都应让玩家直观地感受到明确、有吸引力且切实的收益，避免“鸡肋”科技。收益不仅限于数值提升，还应包含新玩法、新策略的开启。</p>
+                        <p><strong>平衡性：</strong> 研发成本（时间、资源）与解锁内容带来的收益必须匹配，避免某些科技过于强大（OP）或过于弱势（UP）。应考虑科技对游戏前期、中期、后期的影响，以及对不同玩家风格的适用性。</p>
+                        <p><strong>系统联动：</strong> 科技的解锁不应孤立存在，而应与游戏的经济、生产、人口、战斗、外交等其他核心系统紧密联动，形成有机整体。确保科技对这些系统的影响是可预测且可控的。</p>
+                        <p><strong>UI/UX友好：</strong> 科技树的布局、图标、描述和解锁反馈应清晰直观，易于玩家理解和操作。</p>
+                        <p><strong>可拓展性：</strong> 设计时应考虑未来内容更新（DLC、资料片）时，科技系统是否能方便地添加新内容而无需大规模重构。</p>
+                    </div>
+                </div>
+
+                <!-- 1. 科技基本信息 -->
+                <div id="basic-info" class="section-card p-8 mb-6 expanded"> <!-- 默认展开此部分 -->
+                    <div class="section-header flex justify-between items-center text-blue-800">
+                        <h2 class="text-2xl font-bold">1. 科技基本信息</h2>
+                        <i class="fas fa-chevron-down text-blue-800 rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="tech-name" class="block mb-2">科技名称</label>
+                                <input type="text" id="tech-name" name="techName" placeholder="例：改良农具" class="mb-4">
+                                
+                                <label for="tech-id" class="block mb-2">科技ID (数据类型: String)</label>
+                                <input type="text" id="tech-id" name="techId" placeholder="例：ECO_FARM_01 (经济类_农耕_01)" class="mb-4">
+                                
+                                <label for="tech-category" class="block mb-2">所属类别 (数据类型: Enum)</label>
+                                <select id="tech-category" name="techCategory" class="mb-4">
+                                    <option value="">选择类别...</option>
+                                    <option value="economy">经济</option>
+                                    <option value="production">生产</option>
+                                    <option value="military">军事</option>
+                                    <option value="science">科学</option>
+                                    <option value="culture">文化</option>
+                                    <option value="diplomacy">外交</option>
+                                    <option value="infrastructure">基础设施</option>
+                                    <option value="special">特殊</option>
+                                </select>
+                                
+                                <label for="tech-tier" class="block mb-2">所属时代/等级 (数据类型: Enum/Int)</label>
+                                <select id="tech-tier" name="techTier" class="mb-4">
+                                    <option value="">选择层级...</option>
+                                    <option value="tier1">第一层级 / 初始时代</option>
+                                    <option value="tier2">第二层级 / 发展时代</option>
+                                    <option value="tier3">第三层级 / 成熟时代</option>
+                                    <option value="tier4">第四层级 / 高级时代</option>
+                                    <option value="tier5">第五层级 / 巅峰时代</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="prerequisites" class="block mb-2">前置科技 (数据类型: List of String, 多项请用逗号分隔)</label>
+                                <textarea id="prerequisites" name="prerequisites" rows="2" placeholder="例：ECO_BASIC_FARMING (基础农业)" class="mb-4"></textarea>
+                                
+                                <label for="unlocks" class="block mb-2">解锁的后续科技 (多项请用逗号分隔)</label>
+                                <textarea id="unlocks" name="unlocks" rows="2" placeholder="例：ECO_MECHANIZED_FARMING (机械化耕种), ECO_FERTILIZER_SYNTHESIS (化肥合成)" class="mb-4"></textarea>
+                                
+                                <label for="description" class="block mb-2">科技描述（玩家可见, 数据类型: String）</label>
+                                <textarea id="description" name="description" rows="4" placeholder="例：研发更高效的农具，提高农业生产力，为城市提供更多粮食。" class="mb-2"></textarea>
+                                <button id="generate-description-btn" class="bg-purple-600 text-white w-full py-2 rounded-lg hover:bg-purple-700 transition mb-4 no-print">
+                                    <i class="fas fa-magic mr-2"></i>AI生成描述
+                                </button>
+
+                                <label for="icon-path" class="block mb-2">图标路径 (数据类型: String)</label>
+                                <input type="text" id="icon-path" name="iconPath" placeholder="例：UI/Icons/Tech/Improved_Farm_Tools.png" class="mb-4">
+
+                                <label for="researcher-faction" class="block mb-2">研发者/阵营 (数据类型: Enum/String)</label>
+                                <input type="text" id="researcher-faction" name="researcherFaction" placeholder="例：所有 / 农业部" class="mb-4">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label class="block mb-2">科技在树状图中的位置示意</label>
+                            <div class="tech-tree-sample">
+基础农业 ──→ 改良农具 ──→ 机械化耕种 ──→ 智慧农业
+                │               │
+                │               └──→ 复合肥料
+                │
+                └──→ 牲畜养殖 ──→ 规模化畜牧</div>
+                            <p class="text-sm text-gray-500 mt-2">此示意图帮助可视化科技在整个科技树中的相对位置和依赖关系。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 研发需求设置 -->
+                <div id="research-requirements" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-orange-700">
+                        <h2 class="text-2xl font-bold">2. 研发需求设置</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="research-cost-type" class="block mb-2">研发成本类型 (数据类型: Enum)</label>
+                                <select id="research-cost-type" name="researchCostType" class="mb-4">
+                                    <option value="">选择成本类型...</option>
+                                    <option value="research_points">科研点</option>
+                                    <option value="gold">金币</option>
+                                    <option value="production">生产力</option>
+                                    <option value="culture">文化点</option>
+                                    <option value="specific_material">特定物资</option>
+                                </select>
+
+                                <label for="research-cost-amount" class="block mb-2">研发成本数量 (数据类型: Int)</label>
+                                <input type="text" id="research-cost-amount" name="researchCostAmount" placeholder="例：150" class="mb-4">
+                                
+                                <label for="research-time" class="block mb-2">研发时间 (数据类型: Float, 游戏内单位)</label>
+                                <input type="text" id="research-time" name="researchTime" placeholder="例：60 (秒/回合)" class="mb-4">
+
+                                <label for="prereq-building-unit" class="block mb-2">建筑/单位要求 (数据类型: List of String, 多项请用逗号分隔)</label>
+                                <textarea id="prereq-building-unit" name="prereqBuildingUnit" rows="2" placeholder="例：[农业学院], [科学家单位]" class="mb-4"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="prereq-resource-condition" class="block mb-2">资源/条件要求 (数据类型: List of String, 多项请用逗号分隔)</label>
+                                <textarea id="prereq-resource-condition" name="prereqResourceCondition" rows="2" placeholder="例：[铁矿石 > 500], [人口 > 1000]" class="mb-4"></textarea>
+                                
+                                <label for="rd-facility-req" class="block mb-2">研发机构要求 (数据类型: String)</label>
+                                <textarea id="rd-facility-req" name="rdFacilityReq" rows="2" placeholder="例：通用实验室 / 高级农业研究所" class="mb-4"></textarea>
+                                
+                                <label for="acceleration" class="block mb-2">研究加速方式 (例：每增加一名工程师可加速10%, 最多增加5名)</label>
+                                <textarea id="acceleration" name="acceleration" rows="2" placeholder="例：每增加一名工程师可加速10%，最多增加5名" class="mb-4"></textarea>
+                                
+                                <label for="risks" class="block mb-2">研发风险与副作用 (例：研发过程可能消耗额外资源, 有5%概率出现事故)</label>
+                                <textarea id="risks" name="risks" rows="2" placeholder="例：研发过程可能消耗额外资源，有5%概率出现事故" class="mb-4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block mb-2">资源消耗曲线 (示例图)</label>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <canvas id="resourceChart" height="200"></canvas>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">此图表展示研发过程中资源消耗和研究进度的示例时间分布，帮助策划评估研发成本曲线的合理性。</p>
+                            
+                            <div class="mt-6">
+                                <label for="difficulty-slider" class="block mb-2">研发难度系数（1-10）</label>
+                                <input type="range" min="1" max="10" value="5" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer range-lg" id="difficulty-slider" name="difficulty">
+                                <div class="flex justify-between text-sm text-gray-600 mt-2">
+                                    <span>简单 (1)</span>
+                                    <span id="difficulty-value" class="font-bold text-blue-700">5</span>
+                                    <span>困难 (10)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 科技效果分析 -->
+                <div id="tech-effects" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-green-700">
+                        <h2 class="text-2xl font-bold">3. 科技效果分析</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="unlock-content-type" class="block mb-2">解锁内容类型 (数据类型: Enum)</label>
+                                <select id="unlock-content-type" name="unlockContentType" class="mb-4">
+                                    <option value="">选择解锁内容类型...</option>
+                                    <option value="building">建筑</option>
+                                    <option value="unit">单位</option>
+                                    <option value="upgrade">升级</option>
+                                    <option value="ability">能力</option>
+                                    <option value="policy">政策</option>
+                                    <option value="resource">资源</option>
+                                    <option value="mechanism">新机制</option>
+                                    <option value="numeric_boost">数值增益</option>
+                                </select>
+
+                                <label for="unlock-details" class="block mb-2">解锁内容详情 (数据类型: List of String, 多项请用逗号分隔)</label>
+                                <textarea id="unlock-details" name="unlockDetails" rows="3" placeholder="例：[B_IRRIGATED_FARM (灌溉农场), B_FERTILIZER_PLANT (化肥工厂)] / [U_FARMER_EFFICIENCY_TIER2 (农民效率升级2级)]" class="mb-4"></textarea>
+                                
+                                <label for="specific-benefits" class="block mb-2">具体收益/效果 (数据类型: List of String/Float, 量化描述)</label>
+                                <textarea id="specific-benefits" name="specificBenefits" rows="3" placeholder="例：[所有农场生产力 +15%]/[解锁农业政策：农田轮作，粮食产量提升10%]/[解锁新资源：化肥]" class="mb-4"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="hidden-benefits-side-effects" class="block mb-2">隐藏收益/副作用 (数据类型: String)</label>
+                                <textarea id="hidden-benefits-side-effects" name="hiddenBenefitsSideEffects" rows="3" placeholder="例：加速城市扩张速度 / 增加环境污染风险" class="mb-4"></textarea>
+                                
+                                <label for="indirect-industry" class="block mb-2">间接效果 - 产业链影响</label>
+                                <textarea id="indirect-industry" name="indirectIndustry" rows="3" placeholder="例：提升相关下游产业如武器制造、机械制造效率" class="mb-4"></textarea>
+                                
+                                <label for="indirect-strategy" class="block mb-2">间接效果 - 战略优势</label>
+                                <textarea id="indirect-strategy" name="indirectStrategy" rows="3" placeholder="例：提升军事单位装备质量，增加贸易议价能力" class="mb-4"></textarea>
+                                
+                                <label for="special-effects" class="block mb-2">特殊效果或机制</label>
+                                <textarea id="special-effects" name="specialEffects" rows="3" placeholder="例：解锁稀有合金特殊项目，每种稀有金属首次使用时有特殊发现概率" class="mb-4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label for="duration-type" class="block mb-2">效果持续时间类型</label>
+                            <select id="duration-type" name="durationType" class="mb-4 w-full">
+                                <option value="">选择持续时间类型...</option>
+                                <option value="permanent">永久</option>
+                                <option value="temporary">临时（需指定时长）</option>
+                                <option value="conditional">条件性（满足特定条件时生效）</option>
+                                <option value="diminishing">递减型（效果随时间衰减）</option>
+                            </select>
+                            
+                            <div id="duration-details" class="mb-4 hidden">
+                                <label for="duration-value" class="block mb-2">持续时间或条件详情</label>
+                                <input type="text" id="duration-value" name="durationValue" placeholder="请指定持续时间或条件..." class="w-full">
+                            </div>
+                            
+                            <label class="block mb-2">科技价值评估（1-10，主观）</label>
+                            <div class="flex items-center space-x-2 mb-4">
+                                <span class="text-gray-600">低</span>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="1" class="ml-1 mr-1">1</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="2" class="mr-1">2</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="3" class="mr-1">3</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="4" class="mr-1">4</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="5" checked class="mr-1">5</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="6" class="mr-1">6</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="7" class="mr-1">7</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="8" class="mr-1">8</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="9" class="mr-1">9</label>
+                                <label class="flex items-center"><input type="radio" name="value-assessment" value="10" class="mr-1">10</label>
+                                <span class="text-gray-600">高</span>
+                            </div>
+                            
+                            <label for="roi-analysis" class="block mb-2">投资回报率（ROI）分析</label>
+                            <textarea id="roi-analysis" name="roiAnalysis" rows="3" placeholder="例：考虑到1000研究点和5000金币的投入，预期可在30个回合内通过增加的产量和效率回本" class="w-full"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 平衡性考量 -->
+                <div id="balance" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-purple-700">
+                        <h2 class="text-2xl font-bold">4. 平衡性考量</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="strategic-significance" class="block mb-2">战略意义 (数据类型: String)</label>
+                                <textarea id="strategic-significance" name="strategicSignificance" rows="3" placeholder="例：开启农业强国发展路径，奠定后期人口增长基础。" class="mb-4"></textarea>
+
+                                <label for="gameplay-linkage" class="block mb-2">玩法关联 (数据类型: Enum List)</label>
+                                <textarea id="gameplay-linkage" name="gameplayLinkage" rows="3" placeholder="例：经济(粮食生产), 人口(增长上限)" class="mb-4"></textarea>
+                                
+                                <label for="synergy" class="block mb-2">协同效应 (数据类型: List of String)</label>
+                                <textarea id="synergy" name="synergy" rows="3" placeholder="例：[与“机械化耕种”科技搭配，进一步提升生产力]" class="mb-4"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="alternative-opposing-techs" class="block mb-2">竞争性科技 (数据类型: List of String)</label>
+                                <textarea id="alternative-opposing-techs" name="alternativeOpposingTechs" rows="3" placeholder="例：[与“采矿自动化”形成资源分配的取舍]" class="mb-4"></textarea>
+
+                                <label for="balancing-notes" class="block mb-2">平衡性考量 (数据类型: String)</label>
+                                <textarea id="balancing-notes" name="balancingNotes" rows="3" placeholder="例：成本较高，但解锁的是中期核心生产力，需确保其收益在中期具有竞争力。考虑对AI玩家的研发偏好。" class="mb-4"></textarea>
+
+                                <label for="player-expectation-balance" class="block mb-2">玩家预期 (数据类型: String)</label>
+                                <textarea id="player-expectation-balance" name="playerExpectationBalance" rows="3" placeholder="例：感到生产力显著提升，解决了前期粮食短缺问题。" class="mb-4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 alert-box alert-yellow">
+                            <h3 class="font-semibold text-yellow-800 mb-2">科技平衡性自检问题</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="balance-check-1" class="flex items-start cursor-pointer">
+                                        <input type="checkbox" id="balance-check-1" name="balanceCheck1" class="mt-1 mr-2">
+                                        <span>此科技是否有可能成为"必选项"，没有合理的替代路径？</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label for="balance-check-2" class="flex items-start cursor-pointer">
+                                        <input type="checkbox" id="balance-check-2" name="balanceCheck2" class="mt-1 mr-2">
+                                        <span>此科技效果是否与其研发投入成本相匹配？</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label for="balance-check-3" class="flex items-start cursor-pointer">
+                                        <input type="checkbox" id="balance-check-3" name="balanceCheck3" class="mt-1 mr-2">
+                                        <span>此科技是否会导致某个游戏系统或策略过于强大？</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label for="balance-check-4" class="flex items-start cursor-pointer">
+                                        <input type="checkbox" id="balance-check-4" name="balanceCheck4" class="mt-1 mr-2">
+                                        <span>此科技是否会在特定情境下产生意外的过强组合效应？</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label for="balance-check-5" class="flex items-start cursor-pointer">
+                                        <input type="checkbox" id="balance-check-5" name="balanceCheck5" class="mt-1 mr-2">
+                                        <span>此科技是否有足够的反制或替代策略？</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block mb-2">科技强度随游戏进程变化曲线 (示例图)</label>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <canvas id="strengthCurveChart" height="200"></canvas>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">此图表展示科技效果在游戏不同阶段的相对强度变化。理想曲线应符合游戏整体节奏设计，避免前期过强或后期无用。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 系统联动 -->
+                <div id="system-integration" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-indigo-700">
+                        <h2 class="text-2xl font-bold">5. 系统联动</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="economy-integration" class="block mb-2">经济系统联动</label>
+                                <textarea id="economy-integration" name="economyIntegration" rows="3" placeholder="例：提升资源产出和加工效率，影响市场价格和贸易关系" class="mb-4"></textarea>
+                                
+                                <label for="production-integration" class="block mb-2">生产系统联动</label>
+                                <textarea id="production-integration" name="productionIntegration" rows="3" placeholder="例：解锁新的生产线和制造工艺，提高产品质量和产能" class="mb-4"></textarea>
+                                
+                                <label for="social-integration" class="block mb-2">人口/社会系统联动</label>
+                                <textarea id="social-integration" name="socialIntegration" rows="3" placeholder="例：增加工作岗位，影响人口福利和专业技能分布" class="mb-4"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="military-integration" class="block mb-2">军事系统联动</label>
+                                <textarea id="military-integration" name="militaryIntegration" rows="3" placeholder="例：提升武器装备性能，影响战斗单位属性和战术选择" class="mb-4"></textarea>
+                                
+                                <label for="diplomacy-integration" class="block mb-2">外交系统联动</label>
+                                <textarea id="diplomacy-integration" name="diplomacyIntegration" rows="3" placeholder="例：提升贸易地位，影响与其他文明的关系，可触发特殊外交选项" class="mb-4"></textarea>
+                                
+                                <label for="environment-integration" class="block mb-2">环境系统联动</label>
+                                <textarea id="environment-integration" name="environmentIntegration" rows="3" placeholder="例：生产过程可能产生污染，影响环境系统和相关参数" class="mb-4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label for="event-triggers" class="block mb-2">事件触发</label>
+                            <textarea id="event-triggers" name="eventTriggers" rows="3" placeholder="例：研发完成后可能触发特殊事件'冶金突破'，提供临时额外加成或特殊任务" class="w-full mb-4"></textarea>
+                            
+                            <label for="achievement-integration" class="block mb-2">成就系统关联</label>
+                            <textarea id="achievement-integration" name="achievementIntegration" rows="3" placeholder="例：解锁成就'材料科学先驱'，为玩家提供额外奖励或荣誉标识" class="w-full mb-4"></textarea>
+                            
+                            <label class="block mb-2">系统联动图示 (示例)</label>
+                            <div class="code-sample">
+高级冶金技术
+  ├── 经济系统 → 资源产出↑ → 市场价值↑ → 贸易利润↑
+  ├── 生产系统 → 新建筑解锁 → 产能提升 → 新产品线
+  ├── 军事系统 → 装备质量↑ → 战斗力↑ → 战术选择↑
+  └── 研发系统 → 解锁新科技 → 科研能力↑</div>
+                            <p class="text-sm text-gray-500 mt-2">此示意图帮助可视化科技与其他游戏系统之间的复杂交互。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. 视觉与叙事呈现 -->
+                <div id="visual-narrative" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-pink-700">
+                        <h2 class="text-2xl font-bold">6. 视觉与叙事呈现</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="icon-concept" class="block mb-2">科技图标概念</label>
+                                <textarea id="icon-concept" name="iconConcept" rows="3" placeholder="例：带有金属光泽的齿轮与熔炉的组合，呈现金红色调，突出工业感" class="mb-4"></textarea>
+                                
+                                <label for="ui-placement" class="block mb-2">UI展示位置与方式</label>
+                                <textarea id="ui-placement" name="uiPlacement" rows="3" placeholder="例：在科技树第三层级中部偏右，与其他工业类科技形成视觉组" class="mb-4"></textarea>
+                                
+                                <label for="unlock-animation" class="block mb-2">解锁动画概念</label>
+                                <textarea id="unlock-animation" name="unlockAnimation" rows="3" placeholder="例：金属熔化并成型为精密部件，伴随金属撞击声效和火花效果" class="mb-4"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="background-narrative" class="block mb-2">背景叙事</label>
+                                <textarea id="background-narrative" name="backgroundNarrative" rows="3" placeholder="例：冶金工艺的革新代表工业化进程中的关键突破，改变了制造业的基础" class="mb-4"></textarea>
+                                
+                                <label for="lore-integration" class="block mb-2">世界观融合</label>
+                                <textarea id="lore-integration" name="loreIntegration" rows="3" placeholder="例：与游戏世界观中的工业革命进程相符，展现科技进步给社会带来的变革" class="mb-4"></textarea>
+                                
+                                <label for="quote" class="block mb-2">相关引述或格言</label>
+                                <textarea id="quote" name="quote" rows="3" placeholder='例："金属的秘密不在于它的硬度，而在于它如何在火中重生。"——游戏世界观中著名冶金大师' class="mb-4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block mb-2">视觉与听觉反馈设计</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-700 mb-2">研发过程中</h4>
+                                    <textarea id="feedback-during" name="feedbackDuring" rows="3" placeholder="例：进度条呈现金属质感，伴有锻造声效，工人在熔炉旁工作的模糊画面" class="w-full"></textarea>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700 mb-2">研发完成时</h4>
+                                    <textarea id="feedback-completion" name="feedbackCompletion" rows="3" placeholder="例：闪亮的金属部件从模具中取出，伴随成功的号角声和齿轮转动音效" class="w-full"></textarea>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700 mb-2">应用效果时</h4>
+                                    <textarea id="feedback-effect" name="feedbackEffect" rows="3" placeholder="例：相关建筑外观升级，生产效果有更明亮的金属光泽和更精密的组件视觉" class="w-full"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label for="art-assets-needed" class="block mb-2">美术资源需求概览 (数据类型: List of String, 用于美术团队)</label>
+                                <textarea id="art-assets-needed" name="artAssetsNeeded" rows="4" placeholder="例：[科技图标, 农具模型升级, 农场建筑升级贴图]" class="w-full"></textarea>
+
+                                <label for="sound-assets-needed" class="block mb-2">音效资源需求概览 (数据类型: List of String)</label>
+                                <textarea id="sound-assets-needed" name="soundAssetsNeeded" rows="3" placeholder="例：[科技完成音效, 农场生产力提升音效]" class="w-full"></textarea>
+
+                                <label for="localization-needed" class="block mb-2">文本本地化需求 (数据类型: List of String)</label>
+                                <textarea id="localization-needed" name="localizationNeeded" rows="3" placeholder="例：[zh-CN, en-US, ja-JP, ko-KR]" class="w-full"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. 玩家体验 -->
+                <div id="user-experience" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-teal-700">
+                        <h2 class="text-2xl font-bold">7. 玩家体验</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="player-experience" class="block mb-2">预期玩家感受</label>
+                                <textarea id="player-experience" name="playerExperience" rows="3" placeholder="例：玩家应感到一次明显的生产力跃升，尤其在金属相关产业链中体验到显著变化" class="mb-4"></textarea>
+                                
+                                <label for="decision-points" class="block mb-2">决策考量点</label>
+                                <textarea id="decision-points" name="decisionPoints" rows="3" placeholder="例：玩家需要权衡是否优先解锁此技术，或先发展军事/经济科技；资源投入与产出的时间节点考量" class="mb-4"></textarea>
+                                
+                                <label for="strategic-positioning" class="block mb-2">战略定位</label>
+                                <textarea id="strategic-positioning" name="strategicPositioning" rows="3" placeholder="例：适合走工业化路线的玩家，尤其是偏向重工业和军工发展的路线，与贸易路线形成互补" class="mb-4"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label for="usability" class="block mb-2">易用性与可理解性</label>
+                                <textarea id="usability" name="usability" rows="3" placeholder="例：效果直观明确，玩家容易理解其价值；UI中应清晰展示具体数值加成和解锁项目" class="mb-4"></textarea>
+                                
+                                <label for="learning-curve" class="block mb-2">学习曲线考量</label>
+                                <textarea id="learning-curve" name="learningCurve" rows="3" placeholder="例：作为第三层级科技，复杂度适中，新玩家在熟悉基础系统后能理解其价值和应用" class="mb-4"></textarea>
+                                
+                                <label for="target-audience" class="block mb-2">目标玩家群体</label>
+                                <textarea id="target-audience" name="targetAudience" rows="3" placeholder="例：适合战略导向的中高级玩家，特别是喜欢工业化和军事发展路线的玩家" class="mb-4"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block mb-2">满足感设计</label>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <h4 class="font-medium text-gray-700 mb-2">短期满足感</h4>
+                                    <textarea id="satisfaction-short" name="satisfactionShort" rows="3" placeholder="例：立即提升相关产业产出，解锁新建筑和单位，带来明显的进步感" class="w-full"></textarea>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700 mb-2">中期满足感</h4>
+                                    <textarea id="satisfaction-mid" name="satisfactionMid" rows="3" placeholder="例：产业链完善带来的经济增长和军事优势，在游戏中期形成竞争力" class="w-full"></textarea>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700 mb-2">长期满足感</h4>
+                                    <textarea id="satisfaction-long" name="satisfactionLong" rows="3" placeholder="例：解锁后续高级科技的路径，为后期发展奠定基础，形成特色发展路线" class="w-full"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label for="feedback-collection" class="block mb-2">玩家反馈收集计划</label>
+                                <textarea id="feedback-collection" name="feedbackCollection" rows="3" placeholder="例：在游戏内增加对此科技的评分选项，收集玩家是否认为其价值匹配研发成本；在首次解锁后弹出小型问卷" class="w-full"></textarea>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label for="balance-adjustment" class="block mb-2">平衡性调整预案</label>
+                                <textarea id="balance-adjustment" name="balanceAdjustment" rows="3" placeholder="例：如数据显示超过80%玩家必选此科技，考虑提高成本或降低效果；如低于20%的选择率，考虑增强效果或降低门槛" class="w-full"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8. 完整性检查清单 -->
+                <div id="checklist" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-red-700">
+                        <h2 class="text-2xl font-bold">8. 完整性检查清单</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-3">基本设计检查 (B. 科技系统总览与策划考量 & C. 研发系统整体检查清单)</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-1" name="basicCheck1" class="mr-2">
+                                        <label for="basic-check-1" class="cursor-pointer">科技名称和ID是否明确且唯一？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-2" name="basicCheck2" class="mr-2">
+                                        <label for="basic-check-2" class="cursor-pointer">科技描述是否清晰且符合世界观？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-3" name="basicCheck3" class="mr-2">
+                                        <label for="basic-check-3" class="cursor-pointer">科技在树状图中的位置是否合理？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-4" name="basicCheck4" class="mr-2">
+                                        <label for="basic-check-4" class="cursor-pointer">前置和后续科技关系是否合理？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-5" name="basicCheck5" class="mr-2">
+                                        <label for="basic-check-5" class="cursor-pointer">科技类别和层级划分是否准确？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-6" name="basicCheck6" class="mr-2">
+                                        <label for="basic-check-6" class="cursor-pointer">科技树的层级划分（时代/等级）是否清晰且有意义？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="basic-check-7" name="basicCheck7" class="mr-2">
+                                        <label for="basic-check-7" class="cursor-pointer">科技树的视觉布局是否易于理解和导航？</label>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="font-semibold text-gray-800 mt-6 mb-3">研发需求检查</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="research-check-1" name="researchCheck1" class="mr-2">
+                                        <label for="research-check-1" class="cursor-pointer">研究点数和时间需求是否合理？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="research-check-2" name="researchCheck2" class="mr-2">
+                                        <label for="research-check-2" class="cursor-pointer">资源成本是否与科技价值匹配？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="research-check-3" name="researchCheck3" class="mr-2">
+                                        <label for="research-check-3" class="cursor-pointer">所需设施和条件是否明确？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="research-check-4" name="researchCheck4" class="mr-2">
+                                        <label for="research-check-4" class="cursor-pointer">研发风险与加速机制是否考虑？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="research-check-5" name="researchCheck5" class="mr-2">
+                                        <label for="research-check-5" class="cursor-pointer">研发点（或其他投入资源）的获取是否稳定且有策略性？</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-semibold text-gray-800 mb-3">效果设计检查</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="effect-check-1" name="effectCheck1" class="mr-2">
+                                        <label for="effect-check-1" class="cursor-pointer">直接效果是否具体且可量化？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="effect-check-2" name="effectCheck2" class="mr-2">
+                                        <label for="effect-check-2" class="cursor-pointer">间接效果是否考虑全面？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="effect-check-3" name="effectCheck3" class="mr-2">
+                                        <label for="effect-check-3" class="cursor-pointer">特殊效果是否增加游戏深度？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="effect-check-4" name="effectCheck4" class="mr-2">
+                                        <label for="effect-check-4" class="cursor-pointer">效果持续时间是否明确规定？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="effect-check-5" name="effectCheck5" class="mr-2">
+                                        <label for="effect-check-5" class="cursor-pointer">投资回报率分析是否合理？</label>
+                                    </div>
+                                </div>
+                                
+                                <h3 class="font-semibold text-gray-800 mt-6 mb-3">集成性检查</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-1" name="integrationCheck1" class="mr-2">
+                                        <label for="integration-check-1" class="cursor-pointer">与其他游戏系统的联动是否充分？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-2" name="integrationCheck2" class="mr-2">
+                                        <label for="integration-check-2" class="cursor-pointer">事件和成就关联是否合理？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-3" name="integrationCheck3" class="mr-2">
+                                        <label for="integration-check-3" class="cursor-pointer">视觉和叙事设计是否完整？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-4" name="integrationCheck4" class="mr-2">
+                                        <label for="integration-check-4" class="cursor-pointer">玩家体验考量是否全面？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-5" name="integrationCheck5" class="mr-2">
+                                        <label for="integration-check-5" class="cursor-pointer">是否考虑了不同玩家群体的需求？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-6" name="integrationCheck6" class="mr-2">
+                                        <label for="integration-check-6" class="cursor-pointer">科技解锁是否能开启新的系统玩法或深度？</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="integration-check-7" name="integrationCheck7" class="mr-2">
+                                        <label for="integration-check-7" class="cursor-pointer">游戏中的事件、任务或外部因素是否能影响科技研发？</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 alert-box alert-red">
+                            <h3 class="font-semibold text-red-800 mb-3">严重问题检查（必须解决）</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start">
+                                    <input type="checkbox" id="critical-check-1" name="criticalCheck1" class="mt-1 mr-2">
+                                    <label for="critical-check-1" class="cursor-pointer">
+                                        <p class="font-medium">科技是否存在严重的游戏破坏性问题？</p>
+                                        <p class="text-sm text-gray-600">如某项科技一旦解锁会导致游戏平衡性崩溃或使其他路线完全失去可行性</p>
+                                    </label>
+                                </div>
+                                <div class="flex items-start">
+                                    <input type="checkbox" id="critical-check-2" name="criticalCheck2" class="mt-1 mr-2">
+                                    <label for="critical-check-2" class="cursor-pointer">
+                                        <p class="font-medium">是否存在循环依赖或冲突的科技关系？</p>
+                                        <p class="text-sm text-gray-600">检查科技树结构是否存在逻辑矛盾或循环依赖</p>
+                                    </label>
+                                </div>
+                                <div class="flex items-start">
+                                    <input type="checkbox" id="critical-check-3" name="criticalCheck3" class="mt-1 mr-2">
+                                    <label for="critical-check-3" class="cursor-pointer">
+                                        <p class="font-medium">科技效果是否有明确的实现机制？</p>
+                                        <p class="text-sm text-gray-600">每项效果都必须有明确的技术实现路径，避免"空中楼阁"</p>
+                                    </label>
+                                </div>
+                                <div class="flex items-start">
+                                    <input type="checkbox" id="critical-check-4" name="criticalCheck4" class="mt-1 mr-2">
+                                    <label for="critical-check-4" class="cursor-pointer">
+                                        <p class="font-medium">科技设计是否符合产品整体风格？</p>
+                                        <p class="text-sm text-gray-600">确保不与游戏的核心设计理念、美术风格或世界观产生冲突</p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. 策划考量 -->
+                <div id="planning-considerations" class="section-card p-8 mb-6">
+                    <div class="section-header flex justify-between items-center text-gray-800">
+                        <h2 class="text-2xl font-bold">9. 策划考量</h2>
+                        <i class="fas fa-chevron-down rotate-icon no-print"></i>
+                    </div>
+                    
+                    <div class="collapsible-content mt-4">
+                        <div class="mb-6">
+                            <label for="tech-tree-type-consideration" class="block mb-2">科技树类型考量 (数据类型: String)</label>
+                            <textarea id="tech-tree-type-consideration" name="techTreeTypeConsideration" rows="2" placeholder="例：混合式，前期线性引导，中期分叉提供选择，后期开放互联。考量：哪种类型最符合游戏的核心玩法和策略深度需求？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="era-tier-division-consideration" class="block mb-2">时代/等级划分考量 (数据类型: String)</label>
+                            <textarea id="era-tier-division-consideration" name="eraTierDivisionConsideration" rows="4" placeholder="例：石器时代 -> 青铜时代 -> 铁器时代 -> 工业时代。每个时代解锁核心科技集群，解锁下一个时代需要完成特定里程碑科技。考量：每个时代应带来怎样的质变？解锁多少科技？所需总研发时间？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="research-point-acquisition-consideration" class="block mb-2">研发点获取机制考量 (数据类型: String)</label>
+                            <textarea id="research-point-acquisition-consideration" name="researchPointAcquisitionConsideration" rows="3" placeholder="例：主要通过建造研究类建筑获取科研点，科学家人口提供额外加成，完成特定任务可获得一次性科研奖励。考量：获取速度与科技研发速度的匹配性？玩家能否通过不同策略加速科研？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="research-bottleneck-consideration" class="block mb-2">研发瓶颈/挑战考量 (数据类型: String)</label>
+                            <textarea id="research-bottleneck-consideration" name="researchBottleneckConsideration" rows="3" placeholder="例：高级科技需要稀有资源（如“数据核心”），且需要特定高级研究机构。考量：除了科研点，是否还有其他资源或条件限制玩家研发速度？瓶颈设置是否合理，能否促使玩家多样化发展？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="total-tech-game-length-consideration" class="block mb-2">科技树总览与游戏长度考量 (数据类型: String)</label>
+                            <textarea id="total-tech-game-length-consideration" name="totalTechGameLengthConsideration" rows="4" placeholder="例：整个科技树共有5个时代，约80项科技，旨在支持20-30小时的游戏流程。考量：科技数量是否足够支撑游戏时长？后期科技是否有足够吸引力？是否支持不同的胜利条件？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="tech-catch-up-mechanism-consideration" class="block mb-2">科技追赶机制考量 (数据类型: String)</label>
+                            <textarea id="tech-catch-up-mechanism-consideration" name="techCatchUpMechanismConsideration" rows="3" placeholder="例：落后文明研发更古老科技时有科研点加成；可以通过贸易或间谍活动获取他国科技。考量：如何避免科技差距过大导致后期体验不佳？是否提供追赶机制？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="future-expansion-consideration" class="block mb-2">未来拓展性考量 (数据类型: String)</label>
+                            <textarea id="future-expansion-consideration" name="futureExpansionConsideration" rows="3" placeholder="例：预留新的科技类别（如“太空探索”），可方便地添加新时代或分支。考量：科技系统结构是否支持未来的DLC或大型更新？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="ai-behavior-consideration" class="block mb-2">AI行为与偏好考量 (数据类型: String)</label>
+                            <textarea id="ai-behavior-consideration" name="aiBehaviorConsideration" rows="3" placeholder="例：AI文明根据其特性（如军事型AI偏重军事科技，经济型AI偏重经济科技）选择研发路径。考量：AI是否能合理利用科技系统？是否需要为AI设计不同的科技发展策略？" class="w-full"></textarea>
+                        </div>
+                        <div class="mb-6">
+                            <label for="multiplayer-balance-consideration" class="block mb-2">多人游戏平衡性考量 (数据类型: String)</label>
+                            <textarea id="multiplayer-balance-consideration" name="multiplayerBalanceConsideration" rows="3" placeholder="例：确保不同科技路线在多人游戏中都具有竞争力，避免出现“主流”打法；考虑科技差距的快速影响。考量：是否有潜在的科技组合会导致一方玩家压倒性优势？" class="w-full"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure for the form
+        const formDataSchema = {
+            gameTitle: '',
+            techName: '',
+            techId: '',
+            techCategory: '',
+            techTier: '',
+            prerequisites: '',
+            unlocks: '',
+            description: '',
+            iconPath: '',
+            researcherFaction: '',
+            researchCostType: '',
+            researchCostAmount: '',
+            researchTime: '',
+            prereqBuildingUnit: '',
+            prereqResourceCondition: '',
+            rdFacilityReq: '',
+            acceleration: '',
+            risks: '',
+            difficulty: '5', // Default value for slider
+            unlockContentType: '',
+            unlockDetails: '',
+            specificBenefits: '',
+            hiddenBenefitsSideEffects: '',
+            indirectIndustry: '',
+            indirectStrategy: '',
+            specialEffects: '',
+            durationType: '',
+            durationValue: '',
+            valueAssessment: '5', // Default value for radio
+            roiAnalysis: '',
+            strategicSignificance: '',
+            gameplayLinkage: '',
+            synergy: '',
+            alternativeOpposingTechs: '',
+            balancingNotes: '',
+            playerExpectationBalance: '',
+            balanceCheck1: false,
+            balanceCheck2: false,
+            balanceCheck3: false,
+            balanceCheck4: false,
+            balanceCheck5: false,
+            basicCheck1: false,
+            basicCheck2: false,
+            basicCheck3: false,
+            basicCheck4: false,
+            basicCheck5: false,
+            basicCheck6: false,
+            basicCheck7: false,
+            researchCheck1: false,
+            researchCheck2: false,
+            researchCheck3: false,
+            researchCheck4: false,
+            researchCheck5: false,
+            effectCheck1: false,
+            effectCheck2: false,
+            effectCheck3: false,
+            effectCheck4: false,
+            effectCheck5: false,
+            integrationCheck1: false,
+            integrationCheck2: false,
+            integrationCheck3: false,
+            integrationCheck4: false,
+            integrationCheck5: false,
+            integrationCheck6: false,
+            integrationCheck7: false,
+            criticalCheck1: false,
+            criticalCheck2: false,
+            criticalCheck3: false,
+            criticalCheck4: false,
+            iconConcept: '',
+            uiPlacement: '',
+            unlockAnimation: '',
+            backgroundNarrative: '',
+            loreIntegration: '',
+            quote: '',
+            feedbackDuring: '',
+            feedbackCompletion: '',
+            feedbackEffect: '',
+            artAssetsNeeded: '',
+            soundAssetsNeeded: '',
+            localizationNeeded: '',
+            playerExperience: '',
+            decisionPoints: '',
+            strategicPositioning: '',
+            usability: '',
+            learningCurve: '',
+            targetAudience: '',
+            satisfactionShort: '',
+            satisfactionMid: '',
+            satisfactionLong: '',
+            feedbackCollection: '',
+            balanceAdjustment: '',
+            techTreeTypeConsideration: '',
+            eraTierDivisionConsideration: '',
+            researchPointAcquisitionConsideration: '',
+            researchBottleneckConsideration: '',
+            totalTechGameLengthConsideration: '',
+            techCatchUpMechanismConsideration: '',
+            futureExpansionConsideration: '',
+            aiBehaviorConsideration: '',
+            multiplayerBalanceConsideration: '',
+        };
+
+        let resourceChart;
+        let strengthCurveChart;
+
+        // Function to save form data to localStorage
+        function saveFormData() {
+            const data = {};
+            for (const key in formDataSchema) {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        data[key] = element.checked;
+                    } else if (element.type === 'radio') {
+                        // Radio buttons require checking all with the same name
+                        const checkedRadio = document.querySelector(`input[name="${element.name}"]:checked`);
+                        data[key] = checkedRadio ? checkedRadio.value : '';
+                    } else {
+                        data[key] = element.value;
+                    }
+                } else {
+                    // Handle elements that might not have an ID but are part of the schema (e.g., radio buttons by name)
+                    if (key === 'valueAssessment') {
+                        const checkedRadio = document.querySelector('input[name="value-assessment"]:checked');
+                        data[key] = checkedRadio ? checkedRadio.value : '';
+                    }
+                }
+            }
+            localStorage.setItem('techDesignForm', JSON.stringify(data));
+            alert('表单数据已保存到本地浏览器！');
+        }
+
+        // Function to load form data from localStorage
+        function loadFormData() {
+            const savedData = localStorage.getItem('techDesignForm');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                for (const key in data) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = data[key];
+                        } else if (element.type === 'radio') {
+                            // Find and check the correct radio button
+                            const radio = document.querySelector(`input[name="${element.name}"][value="${data[key]}"]`);
+                            if (radio) {
+                                radio.checked = true;
+                            }
+                        } else {
+                            element.value = data[key];
+                        }
+                    } else {
+                        // Handle elements that might not have an ID (like value-assessment radios)
+                        if (key === 'valueAssessment') {
+                            const radio = document.querySelector(`input[name="value-assessment"][value="${data[key]}"]`);
+                            if (radio) {
+                                radio.checked = true;
+                            }
+                        }
+                    }
+                }
+                // Manually update slider value display
+                const difficultySlider = document.getElementById('difficulty-slider');
+                const difficultyValueSpan = document.getElementById('difficulty-value');
+                if (difficultySlider && difficultyValueSpan) {
+                    difficultyValueSpan.textContent = difficultySlider.value;
+                }
+                // Manually update duration details visibility
+                const durationTypeSelect = document.getElementById('duration-type');
+                const durationDetailsDiv = document.getElementById('duration-details');
+                if (durationTypeSelect && durationDetailsDiv) {
+                    if (durationTypeSelect.value === 'temporary' || durationTypeSelect.value === 'conditional' || durationTypeSelect.value === 'diminishing') {
+                        durationDetailsDiv.classList.remove('hidden');
+                    } else {
+                        durationDetailsDiv.classList.add('hidden');
+                    }
+                }
+            }
+        }
+
+        // Function to reset form data
+        function resetForm() {
+            if (confirm('确定要重置所有表单数据吗？此操作不可逆！')) {
+                for (const key in formDataSchema) {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        if (element.type === 'checkbox') {
+                            element.checked = false;
+                        } else if (element.type === 'radio') {
+                            // Reset radio buttons by checking the default one or unchecking all
+                            if (key === 'valueAssessment' && formDataSchema[key] === '5') {
+                                document.querySelector('input[name="value-assessment"][value="5"]').checked = true;
+                            } else {
+                                const radios = document.querySelectorAll(`input[name="${element.name}"]`);
+                                radios.forEach(radio => radio.checked = false);
+                            }
+                        } else if (element.tagName === 'SELECT') {
+                            element.value = ''; // Reset select to default option
+                        } else {
+                            element.value = '';
+                        }
+                    } else {
+                        if (key === 'valueAssessment') {
+                            document.querySelector('input[name="value-assessment"][value="5"]').checked = true;
+                        }
+                    }
+                }
+                // Reset game title and slider value explicitly if they have default values
+                document.getElementById('game-title').value = '';
+                const difficultySlider = document.getElementById('difficulty-slider');
+                if (difficultySlider) {
+                    difficultySlider.value = '5';
+                    document.getElementById('difficulty-value').textContent = '5';
+                }
+                // Hide duration details
+                document.getElementById('duration-details').classList.add('hidden');
+
+                localStorage.removeItem('techDesignForm');
+                alert('表单数据已重置！');
+            }
+        }
+
+        // Function to export form data to JSON
+        function exportToJson() {
+            const data = {};
+            for (const key in formDataSchema) {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        data[key] = element.checked;
+                    } else if (element.type === 'radio') {
+                        const checkedRadio = document.querySelector(`input[name="${element.name}"]:checked`);
+                        data[key] = checkedRadio ? checkedRadio.value : '';
+                    } else {
+                        data[key] = element.value;
+                    }
+                } else {
+                    if (key === 'valueAssessment') {
+                        const checkedRadio = document.querySelector('input[name="value-assessment"]:checked');
+                        data[key] = checkedRadio ? checkedRadio.value : '';
+                    }
+                }
+            }
+            const filename = `科技设计总览表_${document.getElementById('game-title').value || '未命名游戏'}.json`;
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Function to export to PDF (FIXED)
+        function exportToPdf() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            loadingOverlay.style.display = 'flex'; // Show loading overlay
+
+            // Store original states and expand all sections
+            const sectionCards = document.querySelectorAll('.section-card');
+            const originalExpandedStates = new Map(); // Use Map to store states
+
+            sectionCards.forEach(card => {
+                originalExpandedStates.set(card, card.classList.contains('expanded'));
+                card.classList.add('expanded'); // Ensure content is visible for PDF
+            });
+
+            // Small delay to allow DOM to render expanded sections and for CSS transitions to settle
+            setTimeout(() => {
+                const element = document.getElementById('content-area'); // Target the main content area
+
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5], // Margins: Top, Left, Bottom, Right (in inches)
+                    filename: '经营游戏科技设计总览表_' + (document.getElementById('game-title').value || '未命名游戏') + '.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2, // Higher scale for better resolution
+                        logging: false, // Turn off logging unless debugging
+                        useCORS: true, // Needed if you have images/fonts from external domains
+                        letterRendering: true // Might help with text rendering quality
+                    },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } // Use letter format or A4
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Revert sections to original expanded states
+                    sectionCards.forEach(card => {
+                        if (!originalExpandedStates.get(card)) { // If it was originally collapsed
+                            card.classList.remove('expanded');
+                        }
+                    });
+                    loadingOverlay.style.display = 'none'; // Hide loading overlay
+                }).catch(error => {
+                    console.error('PDF export failed:', error);
+                    alert('PDF导出失败，请查看控制台获取详情。');
+                    // Ensure sections are reverted even on error
+                    sectionCards.forEach(card => {
+                        if (!originalExpandedStates.get(card)) {
+                            card.classList.remove('expanded');
+                        }
+                    });
+                    loadingOverlay.style.display = 'none';
+                });
+            }, 300); // Increased delay slightly to allow rendering
+        }
+
+
+        // Function to toggle collapsible sections
+        function toggleCollapsible(event) {
+            const header = event.currentTarget;
+            const card = header.closest('.section-card');
+            if (card) {
+                card.classList.toggle('expanded');
+            }
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Resource Consumption Chart (Example)
+            const ctx1 = document.getElementById('resourceChart').getContext('2d');
+            resourceChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['0%', '20%', '40%', '60%', '80%', '100%'],
+                    datasets: [{
+                        label: '研究点消耗',
+                        data: [0, 50, 150, 300, 500, 800],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '研发进度与资源消耗示例',
+                            color: '#4b5563'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '累计消耗资源量',
+                                color: '#6b7280'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '研发进度',
+                                color: '#6b7280'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Tech Strength Curve Chart (Example)
+            const ctx2 = document.getElementById('strengthCurveChart').getContext('2d');
+            strengthCurveChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: ['游戏前期', '游戏中期', '游戏后期'],
+                    datasets: [{
+                        label: '科技强度',
+                        data: [3, 8, 5], // Example: strong in mid-game, less so late-game
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '科技强度随游戏进程变化示例',
+                            color: '#4b5563'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            title: {
+                                display: true,
+                                text: '相对强度 (1-10)',
+                                color: '#6b7280'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '游戏阶段',
+                                color: '#6b7280'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // AI Description Generation (Placeholder)
+        async function generateDescription() {
+            const techName = document.getElementById('tech-name').value;
+            const techCategory = document.getElementById('tech-category').value;
+            const techTier = document.getElementById('tech-tier').value;
+            const prerequisites = document.getElementById('prerequisites').value;
+            const unlocks = document.getElementById('unlocks').value;
+            const specificBenefits = document.getElementById('specific-benefits').value;
+
+            if (!techName) {
+                alert('请先填写科技名称！');
+                return;
+            }
+
+            const prompt = `为一个经营模拟游戏中的科技生成一段精简的描述文本。科技名称是"${techName}"。
+            ${techCategory ? `它属于"${techCategory}"类别。` : ''}
+            ${techTier ? `它位于科技树的"${techTier}"层级。` : ''}
+            ${prerequisites ? `前置科技有：${prerequisites}。` : ''}
+            ${unlocks ? `解锁的后续科技有：${unlocks}。` : ''}
+            ${specificBenefits ? `主要效果是：${specificBenefits}。` : ''}
+            请用中文提供一个简洁的、玩家可见的科技描述（约50-100字），强调其主要功能和带来的影响。`;
+
+            document.getElementById('generate-description-btn').disabled = true;
+            document.getElementById('generate-description-btn').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>生成中...';
+
+            try {
+                // Placeholder for actual AI API call
+                // In a real scenario, this would call a backend server that interacts with OpenAI, Gemini, etc.
+                const mockResponse = await new Promise(resolve => setTimeout(() => {
+                    resolve({
+                        text: `通过"${techName}"的研发，您的文明在${techCategory ? `${techCategory}领域` : '特定领域'}取得了突破。这项技术解锁了${unlocks ? unlocks.split(',')[0].trim() : '新的能力'}, 显著提升了${specificBenefits || '您的生产效率和发展潜力'}。这将为后续${techTier ? `${techTier.replace('tier', '第')}层级的` : ''}高级科技奠定坚实基础，助力文明走向繁荣。`
+                    });
+                }, 1500)); // Simulate API delay
+
+                document.getElementById('description').value = mockResponse.text;
+            } catch (error) {
+                console.error('AI生成描述失败:', error);
+                alert('AI生成描述失败，请稍后再试或手动填写。');
+            } finally {
+                document.getElementById('generate-description-btn').disabled = false;
+                document.getElementById('generate-description-btn').innerHTML = '<i class="fas fa-magic mr-2"></i>AI生成描述';
+            }
+        }
+
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFormData(); // Load saved data on page load
+            initializeCharts(); // Initialize Chart.js
+
+            // Add event listeners for collapsible sections
+            document.querySelectorAll('.section-header').forEach(header => {
+                header.addEventListener('click', toggleCollapsible);
+            });
+
+            // Save, Export, Reset buttons
+            document.getElementById('save-btn').addEventListener('click', saveFormData);
+            document.getElementById('export-json-btn').addEventListener('click', exportToJson);
+            document.getElementById('export-pdf-btn').addEventListener('click', exportToPdf); // Hook up PDF export
+            document.getElementById('reset-btn').addEventListener('click', resetForm);
+
+            // Difficulty slider update
+            const difficultySlider = document.getElementById('difficulty-slider');
+            const difficultyValueSpan = document.getElementById('difficulty-value');
+            if (difficultySlider && difficultyValueSpan) {
+                difficultySlider.addEventListener('input', () => {
+                    difficultyValueSpan.textContent = difficultySlider.value;
+                });
+            }
+
+            // Duration type select listener
+            const durationTypeSelect = document.getElementById('duration-type');
+            const durationDetailsDiv = document.getElementById('duration-details');
+            if (durationTypeSelect && durationDetailsDiv) {
+                durationTypeSelect.addEventListener('change', () => {
+                    if (durationTypeSelect.value === 'temporary' || durationTypeSelect.value === 'conditional' || durationTypeSelect.value === 'diminishing') {
+                        durationDetailsDiv.classList.remove('hidden');
+                    } else {
+                        durationDetailsDiv.classList.add('hidden');
+                        document.getElementById('duration-value').value = ''; // Clear value if hidden
+                    }
+                });
+            }
+
+            // Navigation links for smooth scroll and active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Add Intersection Observer for active navigation links on scroll
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.3 // Adjust as needed
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    const id = entry.target.id;
+                    const navLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                    if (navLink) {
+                        if (entry.isIntersecting) {
+                            // Remove active from all first to ensure only one is active
+                            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                            navLink.classList.add('active');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.section-card').forEach(section => {
+                observer.observe(section);
+            });
+
+            // AI Description button listener
+            document.getElementById('generate-description-btn').addEventListener('click', generateDescription);
+        });
+
+        // Initial check for active nav link on page load for the first section
+        window.addEventListener('load', () => {
+            const firstSection = document.getElementById('basic-info');
+            if (firstSection) {
+                document.querySelector('.nav-link[href="#basic-info"]').classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
