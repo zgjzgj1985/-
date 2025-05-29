@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>模拟经营游戏 UI/UX 设计检查清单</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .section-header {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            border-bottom: 2px solid #a0c2e8; /* Maintained darker blue border */
+        }
+        
+        .section-header:hover {
+            background-color: #ddebf7; /* Lighter, bluer shade for hover */
+            transform: translateY(-2px); /* More pronounced lift */
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.07); /* Enhanced shadow */
+            border-bottom-color: #79b0e9; /* Darker blue border on hover */
+        }
+        
+        .section-content {
+            transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+            overflow: hidden;
+            max-height: 0; 
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .section-content.expanded {
+            padding-top: 1.5rem; 
+            padding-bottom: 1.5rem; 
+        }
+        
+        .rating-circle {
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 4px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem; 
+            border: 1px solid transparent; 
+        }
+        
+        .rating-circle:hover {
+            transform: scale(1.15); 
+            border-color: #60a5fa; 
+        }
+        
+        .rating-circle.rating-selected {
+            transform: scale(1.2); 
+            font-weight: bold;
+            background-color: #3b82f6 !important; 
+            color: white !important; 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.6); 
+        }
+
+        .rating-circle[data-rating="1"] { background-color: #fee2e2; color: #ef4444; } 
+        .rating-circle[data-rating="2"] { background-color: #fffbe6; color: #f97316; } 
+        .rating-circle[data-rating="3"] { background-color: #fef9c3; color: #eab308; } 
+        .rating-circle[data-rating="4"] { background-color: #ecfccb; color: #84cc16; } 
+        .rating-circle[data-rating="5"] { background-color: #dcfce7; color: #22c55e; } 
+        .rating-circle[data-rating="na"] { background-color: #e0e7eb; color: #6b7280; } 
+
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8); /* Slightly darker for better contrast */
+            color: white;
+            padding: 12px 24px; /* Increased padding */
+            border-radius: 8px; /* More rounded */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* Added transform transition */
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0); /* Slide in from bottom (optional) */
+        }
+        .toast-notification.entering { /* For slide-in effect */
+             transform: translateX(-50%) translateY(20px);
+        }
+        
+        .print-only {
+            display: none;
+        }
+        
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block;
+            }
+            .section-content {
+                max-height: none !important;
+                display: block !important;
+                padding-top: 1rem !important; 
+                padding-bottom: 1rem !important;
+            }
+            .bg-gray-100, .bg-blue-50, .bg-gray-50, .bg-yellow-50 {
+                background-color: white !important;
+            }
+            .shadow, .shadow-lg {
+                box-shadow: none !important;
+            }
+            .border {
+                border-color: #ddd !important;
+            }
+            .rating-group .rating-circle:not(.rating-selected) {
+                display: none;
+            }
+            .rating-group .rating-selected {
+                background-color: #eee !important; 
+                color: #333 !important;
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+            }
+        }
+        .action-button-icon {
+            width: 1.25em; /* 20px if font size is 16px */
+            height: 1.25em;
+            margin-right: 0.375em; /* Equivalent to mr-1.5 or similar */
+            display: inline-block;
+            vertical-align: text-bottom; /* Aligns icon better with text */
+        }
+    </style>
+</head>
+<body>
+<header class="bg-gradient-to-r from-blue-700 to-blue-900 text-white py-6 shadow-xl"> <!-- Deeper gradient, larger shadow -->
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold mb-2">模拟经营游戏 UI/UX 设计检查清单</h1>
+        <p class="opacity-80">全面评估游戏用户界面和用户体验的有效工具</p>
+    </div>
+</header>
+
+<div class="container mx-auto px-4 my-8">
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-8"> <!-- Enhanced shadow -->
+        <div class="p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">基本信息</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="project-name">项目名称 <span class="text-red-500">*</span></label>
+                        <input type="text" id="project-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="输入游戏名称 (必填)">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="project-phase">项目阶段</label>
+                        <select id="project-phase" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">请选择阶段</option>
+                            <option value="concept">概念设计阶段</option>
+                            <option value="prototype">原型开发阶段</option>
+                            <option value="production">生产阶段</option>
+                            <option value="testing">测试阶段</option>
+                            <option value="release">发布准备阶段</option>
+                            <option value="post-release">发布后优化阶段</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="evaluator">评估人</label>
+                        <input type="text" id="evaluator" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="输入评估人姓名">
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="date">评估日期</label>
+                        <input type="date" id="date" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1" for="project-desc">项目描述 <span class="text-red-500">*</span></label>
+                <textarea id="project-desc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="简要描述游戏的类型、核心玩法、目标受众及关键特性 (必填)"></textarea>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex flex-wrap gap-2 justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2 md:mb-0">评估清单</h2>
+        <div class="flex flex-wrap gap-2 no-print">
+            <button id="expand-all" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 hover:shadow-md transition-colors duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5" /></svg>
+                展开全部
+            </button>
+            <button id="collapse-all" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 hover:shadow-md transition-colors duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v4m0 0h4M4 8l5-5m11 1V8m0 0h-4m4-4l-5 5M4 20v-4m0 0h4M4 16l5 5m11-1v-4m0 0h-4m4 4l-5-5" /></svg>
+                折叠全部
+            </button>
+            <button id="print-btn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 hover:shadow-md transition-colors duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                打印结果
+            </button>
+            <button id="save-btn" class="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 hover:shadow-md transition-colors duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M7.5 2.75A2.75 2.75 0 004.75 5.5V14.5A2.75 2.75 0 007.5 17.25H12.5A2.75 2.75 0 0015.25 14.5V8.305a2.75 2.75 0 00-.805-1.945L11.195 3.19A2.75 2.75 0 009.25 2.75H7.5zM9.5 4a.5.5 0 01.5.5V7h2.5a.5.5 0 010 1H10v2.5a.5.5 0 01-1 0V8H6.5a.5.5 0 010-1H9V4.5a.5.5 0 01.5-.5z" /></svg>
+                保存数据
+            </button>
+            <button id="load-btn" class="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 hover:shadow-md transition-colors duration-150"> <!-- yellow-600 to yellow-500 for better text contrast -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H5.5z" /><path d="M9 13.25V22l3-3-3-3.25z" fill="#FFF" /><path d="M9 13.25V17l3-3-3-3.25z" /></svg> <!-- Simpler Upload -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" ><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 5.75 5.75 0 01.508 11.09A4.502 4.502 0 016.75 19.5z" /></svg>
+                加载数据
+            </button>
+            <button id="reset-btn" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 hover:shadow-md transition-colors duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="action-button-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                重置表单
+            </button>
+        </div>
+    </div>
+    
+    <div class="instructions bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-md shadow"> <!-- Added rounded-md and shadow -->
+        <h3 class="font-bold text-yellow-800 mb-2">使用说明</h3>
+        <p class="text-yellow-800">
+            每个评估项使用1-5分评分系统：
+            <span class="font-semibold text-red-700">1分</span>表示<span class="italic font-bold">不符合要求</span>；
+            <span class="font-semibold text-orange-700">2分</span>表示<span class="italic">有重大不足</span>；
+            <span class="font-semibold text-yellow-700">3分</span>表示<span class="italic">一般或有改进空间</span>；
+            <span class="font-semibold text-lime-700">4分</span>表示<span class="italic">符合要求，有小瑕疵</span>；
+            <span class="font-semibold text-green-700">5分</span>表示<span class="italic font-bold">完全符合要求</span>。
+            也可选择"不适用"选项。点击各部分标题可展开/折叠内容。
+        </p>
+    </div>
+
+    <!-- 第一部分：总体原则与策略 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6"> <!-- Enhanced shadow -->
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-1">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">I. 总体原则与策略</h2>
+                <p class="text-sm text-gray-600">Overall Principles & Strategy</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/25 (不适用: 0)</div>
+                <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-1" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">用户为中心</h3>
+                            <p class="text-sm text-gray-600">UI/UX设计是否充分考虑了目标玩家的习惯、认知能力和期望，特别是在模拟经营游戏的复杂交互场景下？</p>
+                        </div>
+                        <div class="rating-group" data-item="1.1" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：新手玩家反馈引导流程过于复杂，缺乏直观性。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">用户研究验证</h3>
+                            <p class="text-sm text-gray-600">是否进行了针对模拟经营游戏目标用户的研究或玩家测试来验证设计假设？</p>
+                        </div>
+                        <div class="rating-group" data-item="1.2" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：尚未进行大规模玩家测试，仅进行了内部可用性测试。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">核心体验支持 <span class="text-xs text-blue-600 font-medium">(模拟经营核心)</span></h3>
+                            <p class="text-sm text-gray-600">UI/UX是否直接服务于游戏的核心玩法和乐趣（如建造、资源管理、策略决策、长期发展规划）？玩家是否能通过UI清晰感知进度和成就？</p>
+                        </div>
+                        <div class="rating-group" data-item="1.3" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：建造模式的UI遮挡了部分视野，影响精准放置；财务报表难以解读，影响决策。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">可扩展性</h3>
+                            <p class="text-sm text-gray-600">UI/UX设计是否能够适应未来新增的游戏内容、机制或功能（如新资源、新建筑类型、更复杂的产业链）？</p>
+                        </div>
+                        <div class="rating-group" data-item="1.4" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：新的科技树界面将需要重新设计，现有布局不支持扩展。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">性能与响应</h3>
+                            <p class="text-sm text-gray-600">UI的加载速度、动画流畅度以及操作响应是否符合预期？尤其在游戏后期元素增多时是否依然流畅？</p>
+                        </div>
+                        <div class="rating-group" data-item="1.5" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：加载动画偶有卡顿，尤其是切换大型管理界面时。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二部分：信息呈现与组织 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6">
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-2">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">II. 信息呈现与组织</h2>
+                <p class="text-sm text-gray-600">Information Presentation & Organization</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/30 (不适用: 0)</div>
+                 <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-2" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">文本可读性</h3>
+                            <p class="text-sm text-gray-600">所有文本（包括字体、大小、颜色、对比度）在各种背景和UI规模下是否都清晰易读？</p>
+                        </div>
+                        <div class="rating-group" data-item="2.1" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：某些资源数值在深色背景下难以辨认，提示文字过小。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">重要信息突显</h3>
+                            <p class="text-sm text-gray-600">关键信息（如资源告警、任务目标、财政赤字）是否通过颜色、大小、动画或布局等方式突出显示，次要信息是否合理弱化？</p>
+                        </div>
+                        <div class="rating-group" data-item="2.2" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：经济状况预警不明显，玩家往往未能及时发现问题。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">信息层级与导航 <span class="text-xs text-blue-600 font-medium">(模拟经营核心)</span></h3>
+                            <p class="text-sm text-gray-600">信息是否按逻辑分组和分类？是否有清晰的层级结构（主菜单、子菜单、概览面板、详细面板）以支持模拟经营中复杂的信息查询需求？</p>
+                        </div>
+                        <div class="rating-group" data-item="2.3" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：科技树与建筑菜单之间缺乏直接跳转，需要多步操作；寻找特定建筑的统计数据路径过深。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">导航便捷性</h3>
+                            <p class="text-sm text-gray-600">玩家能否轻松地在不同信息和界面之间切换？导航路径是否直观且一致？是否有面包屑导航或快捷方式？</p>
+                        </div>
+                        <div class="rating-group" data-item="2.4" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：缺少全局搜索功能，后期管理大型基地时查找特定信息困难。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">信息密度与管理 <span class="text-xs text-blue-600 font-medium">(模拟经营核心)</span></h3>
+                            <p class="text-sm text-gray-600">单个界面显示的信息量是否恰当？特别是在游戏中后期，大量元素出现时，玩家能否有效管理信息而不感到过载？是否有足够的筛选、排序或概览工具？</p>
+                        </div>
+                        <div class="rating-group" data-item="2.5" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：后期城市列表过长，缺乏有效的筛选和批量管理功能；资源统计面板信息层级不足，难以快速定位瓶颈。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">实时性与可视化</h3>
+                            <p class="text-sm text-gray-600">关键数据（如资源储量、产销平衡、幸福度）是否实时更新？复杂数据是否通过图表、趋势线、热力图等方式进行有效可视化，帮助玩家理解状况和趋势？</p>
+                        </div>
+                        <div class="rating-group" data-item="2.6" tabindex="0">
+                            <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                            <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                            <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                            <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                            <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                            <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：人口增长率图表不够直观，无法一眼看出趋势；缺少关键生产链的可视化监控。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第三部分：操作便捷性与交互设计 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6">
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-3">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">III. 操作便捷性与交互设计</h2>
+                <p class="text-sm text-gray-600">Operation Convenience & Interaction Design</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/25 (不适用: 0)</div>
+                <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-3" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">直观性与可发现性</h3>
+                            <p class="text-sm text-gray-600">UI元素（按钮、图标、滑块）是否具有明确的指代性，玩家能否直观理解其功能？关键功能是否易于发现？</p>
+                        </div>
+                        <div class="rating-group" data-item="3.1" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：部分图标设计过于抽象，初次使用时难以猜测其用途。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">功能解释与提示</h3>
+                            <p class="text-sm text-gray-600">是否有适当的提示（如悬停提示/Tooltip、动态帮助）来解释复杂功能或不常用操作？</p>
+                        </div>
+                        <div class="rating-group" data-item="3.2" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：部分高级管理选项缺少悬停提示，玩家需要多次尝试才能理解其作用。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">流畅性与效率 <span class="text-xs text-blue-600 font-medium">(模拟经营核心)</span></h3>
+                            <p class="text-sm text-gray-600">常用操作（建造、管理、选择、升级）是否操作步骤少、流畅便捷？游戏是否为重复性任务提供了批量操作、模板化或自动化设置的UI支持？</p>
+                        </div>
+                        <div class="rating-group" data-item="3.3" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：批量建造同类型建筑的操作繁琐，缺少蓝图或复制功能；调整生产线配比步骤过多。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">控制与精度</h3>
+                            <p class="text-sm text-gray-600">玩家是否能精确地执行操作（如建造对齐、道路连接、数值调整、区域划分）？是否有辅助对齐或吸附功能？</p>
+                        </div>
+                        <div class="rating-group" data-item="3.4" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：拖动滑块调整数值时，缺乏精确的数字输入框；放置建筑时对齐困难。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">跨平台/输入兼容性</h3>
+                            <p class="text-sm text-gray-600">UI和交互是否能良好适应不同输入设备（鼠标、键盘、手柄、触控屏）？操作逻辑是否在各设备上保持一致性？</p>
+                        </div>
+                        <div class="rating-group" data-item="3.5" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：手柄操作模式下，菜单选择的高亮框不够明显，径向菜单操作不便。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- 第四部分：反馈与错误处理 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6">
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">IV. 反馈与错误处理</h2>
+                <p class="text-sm text-gray-600">Feedback & Error Handling</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/25 (不适用: 0)</div>
+                <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-4" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">及时反馈</h3>
+                            <p class="text-sm text-gray-600">玩家的每次重要操作是否都能得到即时、清晰的反馈（视觉、听觉、触觉）？</p>
+                        </div>
+                        <div class="rating-group" data-item="4.1" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：点击建造按钮后，缺少明显的视觉或音效确认。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">明确性反馈</h3>
+                            <p class="text-sm text-gray-600">反馈信息是否明确告知玩家操作的结果（成功、失败、进行中、资源变化）？</p>
+                        </div>
+                        <div class="rating-group" data-item="4.2" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：任务完成后，没有明确的完成提示或奖励获取动画。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">错误预防与提示</h3>
+                            <p class="text-sm text-gray-600">UI是否能预先提示玩家可能发生的错误（如资源不足无法建造、前置条件未满足）？相关按钮是否会置灰或显示原因？</p>
+                        </div>
+                        <div class="rating-group" data-item="4.3" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：建造界面未清晰显示当前资源是否足够，导致频繁尝试失败。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">错误友好度</h3>
+                            <p class="text-sm text-gray-600">当错误发生时，错误提示是否清晰、友好，并能解释原因和提供可能的解决方案（如“需要先研究X科技”）？</p>
+                        </div>
+                        <div class="rating-group" data-item="4.4" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：错误提示仅显示错误代码，未能提供具体原因或解决方案。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">撤销与重做</h3>
+                            <p class="text-sm text-gray-600">对于关键操作（如建筑放置、拆除、政策调整），是否有撤销或重做功能，以允许玩家纠正错误或尝试不同方案？</p>
+                        </div>
+                        <div class="rating-group" data-item="4.5" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：目前仅支持一步撤销，不支持多步撤销和重做功能。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第五部分：视觉设计与美学 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6">
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-5">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">V. 视觉设计与美学</h2>
+                <p class="text-sm text-gray-600">Visual Design & Aesthetics</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/25 (不适用: 0)</div>
+                <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-5" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">整体风格统一</h3>
+                            <p class="text-sm text-gray-600">UI的视觉风格（色彩、字体、图标、形状、材质感）是否与游戏的整体艺术风格和世界观高度统一，并能有效烘托模拟经营主题氛围？</p>
+                        </div>
+                        <div class="rating-group" data-item="5.1" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：游戏是赛博朋克风格，但UI图标看起来更像复古风格。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">视觉一致性</h3>
+                            <p class="text-sm text-gray-600">UI元素（如按钮样式、输入框、窗口边框）是否在所有界面中保持一致性？</p>
+                        </div>
+                        <div class="rating-group" data-item="5.2" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：不同弹出窗口的按钮样式不统一，影响用户认知。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">美观与专业</h3>
+                            <p class="text-sm text-gray-600">UI是否具有吸引力、视觉舒适？排版、间距、对齐是否专业且有条理？</p>
+                        </div>
+                        <div class="rating-group" data-item="5.3" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：布局略显拥挤，需要增加更多的留白空间。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">可区分性</h3>
+                            <p class="text-sm text-gray-600">不同类型或功能的UI元素（如可交互按钮、不可交互文本、状态指示器）是否易于区分？重要信息是否通过视觉设计得到有效强调？</p>
+                        </div>
+                        <div class="rating-group" data-item="5.4" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：资源图标颜色相似，在快速浏览时容易混淆。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">动画与特效</h3>
+                            <p class="text-sm text-gray-600">UI动画（如过渡、悬停、点击效果）是否流畅、自然，且有助于增强用户体验（而非干扰或拖慢节奏）？</p>
+                        </div>
+                        <div class="rating-group" data-item="5.5" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：弹出窗口的动画速度过慢，感觉拖沓。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第六部分：新手引导与帮助 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6">
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-6">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">VI. 新手引导与帮助 <span class="text-xs text-blue-600 font-medium">(模拟经营核心)</span></h2>
+                <p class="text-sm text-gray-600">Onboarding & Help (Crucial for complex simulation games)</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/25 (不适用: 0)</div>
+                <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-6" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">新手体验 (FTUE)</h3>
+                            <p class="text-sm text-gray-600">首次进入游戏时，UI/UX是否能有效引导新手玩家了解核心机制和基础操作？引导是否过于强制或信息量过大？</p>
+                        </div>
+                        <div class="rating-group" data-item="6.1" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：引导任务过多，流程过于线性，限制了玩家早期探索的自由度。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">教程设计</h3>
+                            <p class="text-sm text-gray-600">教程是否循序渐进，结合实际操作，不过于冗长或信息爆炸？是否允许玩家跳过或稍后回顾教程内容？</p>
+                        </div>
+                        <div class="rating-group" data-item="6.2" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：教程内容过于密集，新手难以一次性消化所有信息；缺少交互式练习环节。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">上下文帮助</h3>
+                            <p class="text-sm text-gray-600">复杂的功能、概念或UI元素是否有即时、上下文相关的帮助信息（如悬停提示、问号按钮、动态提示条）？</p>
+                        </div>
+                        <div class="rating-group" data-item="6.3" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：部分资源类型或生产链信息在生产界面没有快速查看入口或解释。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">帮助文档/百科</h3>
+                            <p class="text-sm text-gray-600">是否有易于访问和搜索的游戏内百科、词汇表或帮助系统，供玩家随时查阅详细机制和数据？</p>
+                        </div>
+                        <div class="rating-group" data-item="6.4" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：百科系统信息不全，且搜索功能效果不佳，缺乏相关条目链接。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">渐进式揭示 (Progressive Disclosure)</h3>
+                            <p class="text-sm text-gray-600">游戏机制和UI功能是否随着玩家的进度逐步解锁或揭示，避免一开始就让玩家负担过重？高级功能是否对新手隐藏或简化？</p>
+                        </div>
+                        <div class="rating-group" data-item="6.5" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：部分高级建筑在游戏初期就出现在建造菜单中，给新手带来困惑。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第七部分：可访问性 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6">
+        <div class="section-header bg-blue-50 px-6 py-4 rounded-t-lg flex justify-between items-center" data-section="section-7">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">VII. 可访问性</h2>
+                <p class="text-sm text-gray-600">Accessibility</p>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-3 text-sm section-score">总分: <span class="font-bold">0</span>/30 (不适用: 0)</div>
+                 <svg class="toggle-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+        <div id="section-7" class="section-content">
+            <div class="p-6 space-y-6">
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">颜色对比度</h3>
+                            <p class="text-sm text-gray-600">文字和背景、重要UI元素（如图标、按钮）与其背景的颜色对比度是否符合WCAG AA级或以上标准？</p>
+                        </div>
+                        <div class="rating-group" data-item="7.1" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：某些关键图标的颜色对比度较低，在复杂背景下难以识别。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">色盲模式/颜色自定义</h3>
+                            <p class="text-sm text-gray-600">是否有色盲模式或可调颜色选项，以确保信息不单纯依赖颜色来传达？</p>
+                        </div>
+                        <div class="rating-group" data-item="7.2" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：当前游戏没有提供任何色盲模式或颜色调整选项。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">字体大小与UI缩放</h3>
+                            <p class="text-sm text-gray-600">是否提供调整字体大小或UI整体缩放的选项，以适应不同视力状况和屏幕分辨率的玩家？</p>
+                        </div>
+                        <div class="rating-group" data-item="7.3" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：在4K分辨率下，字体和UI元素显得过小，影响阅读和操作。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">听觉替代与字幕</h3>
+                            <p class="text-sm text-gray-600">重要信息或警报是否除了听觉提示外，也有视觉提示（如字幕、闪烁图标）？所有语音内容是否有清晰可调的字幕？</p>
+                        </div>
+                        <div class="rating-group" data-item="7.4" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：紧急事件仅通过音效提示，无明显视觉警报，容易被忽略。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">输入多样性与按键重映射</h3>
+                            <p class="text-sm text-gray-600">是否支持按键重映射，允许玩家根据需求自定义快捷键？是否支持仅用键盘或仅用鼠标操作核心功能？</p>
+                        </div>
+                        <div class="rating-group" data-item="7.5" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：缺少自定义快捷键功能，玩家无法根据习惯调整操作。" rows="2"></textarea>
+                    </div>
+                </div>
+                
+                <div class="checklist-item bg-gray-50 p-4 rounded-lg">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                        <div class="mb-2 md:mb-0">
+                            <h3 class="font-bold text-gray-800">认知负荷与干扰</h3>
+                            <p class="text-sm text-gray-600">UI设计是否尽量减少了玩家的认知负荷，避免不必要的干扰元素（如过度动画、过多不相关信息）？</p>
+                        </div>
+                        <div class="rating-group" data-item="7.6" tabindex="0">
+                           <span class="rating-circle" data-rating="1" title="1分 - 不符合要求">1</span>
+                           <span class="rating-circle" data-rating="2" title="2分 - 有重大不足">2</span>
+                           <span class="rating-circle" data-rating="3" title="3分 - 一般或有改进空间">3</span>
+                           <span class="rating-circle" data-rating="4" title="4分 - 符合要求，有小瑕疵">4</span>
+                           <span class="rating-circle" data-rating="5" title="5分 - 完全符合要求">5</span>
+                           <span class="rating-circle ml-2" data-rating="na" title="不适用">N/A</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <textarea class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="添加备注，例如：信息更新过于频繁且无重点，玩家难以快速把握全局状态。" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 总结部分 -->
+    <div class="bg-white rounded-lg shadow-xl border border-gray-200 mb-6"> <!-- Enhanced shadow -->
+        <div class="px-6 py-4 bg-blue-50 rounded-t-lg">
+            <h2 class="text-xl font-bold text-gray-800">总体评估</h2>
+        </div>
+        <div class="p-6">
+            <div class="mb-6">
+                <div class="flex justify-between mb-2">
+                    <h3 class="font-bold">各部分评分</h3>
+                    <span id="total-score" class="font-bold">总分: 0/185 (不适用: 0)</span>
+                </div>
+                <div class="h-64 mb-4">
+                    <canvas id="score-chart"></canvas>
+                </div>
+                <div id="score-distribution" class="flex flex-wrap gap-2 justify-center sm:justify-between text-sm text-gray-600 mt-2"> <!-- Centered on small screens -->
+                    <div class="bg-green-100 text-green-800 px-3 py-1.5 rounded-md shadow-sm">不需要改进 (4-5分) <span id="good-items" class="font-bold">(0)</span></div>
+                    <div class="bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-md shadow-sm">需要轻微改进 (2-3分) <span id="medium-items" class="font-bold">(0)</span></div>
+                    <div class="bg-red-100 text-red-800 px-3 py-1.5 rounded-md shadow-sm">需要重点改进 (1分) <span id="bad-items" class="font-bold">(0)</span></div>
+                    <div class="bg-gray-200 text-gray-800 px-3 py-1.5 rounded-md shadow-sm">不适用 (N/A) <span id="na-items" class="font-bold">(0)</span></div> <!-- Adjusted N/A color for better visibility -->
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="font-bold mb-2">优先级建议</h3>
+                <div class="overflow-x-auto"> <!-- Added for responsiveness on small screens -->
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-2 border text-left text-sm font-semibold text-gray-700">优先级</th>
+                                <th class="p-2 border text-left text-sm font-semibold text-gray-700">问题类别</th>
+                                <th class="p-2 border text-left text-sm font-semibold text-gray-700">得分情况</th>
+                                <th class="p-2 border text-left text-sm font-semibold text-gray-700">建议</th>
+                            </tr>
+                        </thead>
+                        <tbody id="priority-table">
+                            <tr>
+                                <td colspan="4" class="p-3 border text-center text-gray-500">请完成评估以获取建议</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="font-bold mb-2">总结评论与关键改进点</h3>
+                <textarea id="summary-comments" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 textarea-auto-resize" placeholder="请在此添加总体评价、主要发现，以及针对模拟经营特性（如信息管理复杂度、长期目标引导、核心循环操作效率、新手引导友好度）的改进建议..." rows="5"></textarea>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Toast Notification Container -->
+<div id="toast-container" class="toast-notification"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const sections = document.querySelectorAll('.section-content');
+        const sectionHeaders = document.querySelectorAll('.section-header');
+        const ratingCircles = document.querySelectorAll('.rating-circle');
+        const textareas = document.querySelectorAll('.textarea-auto-resize');
+        const formInputs = document.querySelectorAll('input, select, textarea');
+
+        function showToast(message, type = 'info') { // Added type for potential color coding
+            const toast = document.getElementById('toast-container');
+            toast.textContent = message;
+            toast.classList.remove('entering'); // Reset for re-animation
+            void toast.offsetWidth; // Trigger reflow
+            toast.classList.add('show', 'entering');
+
+            // Optional: Color coding based on type
+            // toast.className = 'toast-notification'; // Reset classes
+            // if (type === 'success') toast.classList.add('bg-green-500');
+            // else if (type === 'error') toast.classList.add('bg-red-500');
+            // else toast.classList.add('bg-gray-800'); // Default
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function setSectionMaxHeight(section, isExpanded) {
+            const icon = section.previousElementSibling.querySelector('.toggle-icon');
+            if (isExpanded) {
+                section.style.maxHeight = '0px'; 
+                section.classList.add('expanded'); 
+                void section.offsetWidth; 
+                section.style.maxHeight = section.scrollHeight + 'px';
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            } else {
+                section.style.maxHeight = section.scrollHeight + 'px'; 
+                requestAnimationFrame(() => {
+                    section.style.maxHeight = '0px';
+                    section.classList.remove('expanded');
+                    if (icon) icon.style.transform = 'rotate(0deg)';
+                });
+            }
+        }
+
+        function getSectionIdFromHeader(header) {
+            return header.getAttribute('data-section');
+        }
+
+        function getSectionContent(sectionId) {
+            return document.getElementById(sectionId);
+        }
+
+        function toggleSection(header) {
+            const sectionId = getSectionIdFromHeader(header);
+            const content = getSectionContent(sectionId);
+            const isExpanded = content.classList.contains('expanded');
+            setSectionMaxHeight(content, !isExpanded);
+        }
+
+        sectionHeaders.forEach(header => {
+            header.addEventListener('click', () => toggleSection(header));
+            // Set initial icon state for pre-collapsed sections (all of them)
+            const icon = header.querySelector('.toggle-icon');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+        });
+        
+        document.getElementById('expand-all').addEventListener('click', () => {
+            sections.forEach(content => setSectionMaxHeight(content, true));
+        });
+        
+        document.getElementById('collapse-all').addEventListener('click', () => {
+            sections.forEach(content => setSectionMaxHeight(content, false));
+        });
+        
+        ratingCircles.forEach(circle => {
+            circle.addEventListener('click', () => {
+                selectRating(circle);
+                saveFormDataToLocalStorage(); 
+            });
+        });
+
+        document.querySelectorAll('.rating-group').forEach(group => {
+            group.addEventListener('keydown', (e) => {
+                const circles = Array.from(group.querySelectorAll('.rating-circle'));
+                let currentIndex = circles.indexOf(document.activeElement);
+                if (currentIndex === -1) { 
+                    currentIndex = 0;
+                    circles[currentIndex].focus();
+                    e.preventDefault();
+                    return;
+                }
+                switch (e.key) {
+                    case 'ArrowRight':
+                        currentIndex = (currentIndex + 1) % circles.length;
+                        circles[currentIndex].focus();
+                        e.preventDefault();
+                        break;
+                    case 'ArrowLeft':
+                        currentIndex = (currentIndex - 1 + circles.length) % circles.length;
+                        circles[currentIndex].focus();
+                        e.preventDefault();
+                        break;
+                    case 'Enter':
+                    case ' ': // Spacebar
+                        selectRating(circles[currentIndex]);
+                        saveFormDataToLocalStorage();
+                        e.preventDefault();
+                        break;
+                }
+            });
+        });
+
+        function selectRating(circle) {
+            const group = circle.parentElement;
+            const groupCircles = group.querySelectorAll('.rating-circle');
+            groupCircles.forEach(c => c.classList.remove('rating-selected'));
+            circle.classList.add('rating-selected');
+            updateSectionScores(); 
+        }
+
+        textareas.forEach(textarea => {
+            textarea.addEventListener('input', autoResizeTextarea);
+            textarea.addEventListener('change', () => saveFormDataToLocalStorage()); 
+        });
+
+        function autoResizeTextarea() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+
+        formInputs.forEach(input => {
+            input.addEventListener('change', () => saveFormDataToLocalStorage());
+            input.addEventListener('input', (e) => {
+                if (e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'date') || 
+                    (e.target.tagName === 'TEXTAREA' && !e.target.classList.contains('textarea-auto-resize'))) {
+                    saveFormDataToLocalStorage();
+                }
+            });
+        });
+        
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const data = collectFormData();
+            const projectName = document.getElementById('project-name').value || '评估结果';
+            const date = new Date().toISOString().slice(0,10);
+            const filename = `模拟经营游戏UIUX评估-${projectName.replace(/[^a-z0-9_\-]/gi, '_')}-${date}.json`;
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('数据已保存为文件！');
+        });
+        
+        document.getElementById('load-btn').addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        loadFormData(data);
+                        showToast('数据已从文件加载！');
+                    } catch (error) {
+                        showToast('无法加载数据，文件格式可能不正确。');
+                        console.error("Error loading data:", error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        });
+        
+        document.getElementById('print-btn').addEventListener('click', () => {
+            sections.forEach(content => setSectionMaxHeight(content, true));
+            setTimeout(() => window.print(), 200); // Increased timeout slightly
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            if (confirm('确定要重置表单所有内容吗？此操作不可撤销。')) {
+                resetForm();
+                showToast('表单已重置！');
+            }
+        });
+
+        function collectFormData() {
+            const data = {
+                project: {
+                    name: document.getElementById('project-name').value,
+                    phase: document.getElementById('project-phase').value,
+                    description: document.getElementById('project-desc').value,
+                },
+                evaluator: document.getElementById('evaluator').value,
+                date: document.getElementById('date').value,
+                ratings: {},
+                notes: {},
+                summary: document.getElementById('summary-comments').value
+            };
+            document.querySelectorAll('.rating-group').forEach(group => {
+                const itemId = group.getAttribute('data-item');
+                const selected = group.querySelector('.rating-selected');
+                if (selected) {
+                    data.ratings[itemId] = selected.getAttribute('data-rating');
+                }
+            });
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                const group = item.querySelector('.rating-group');
+                const itemId = group.getAttribute('data-item');
+                const noteTextarea = item.querySelector('textarea');
+                if (noteTextarea) {
+                    data.notes[itemId] = noteTextarea.value;
+                }
+            });
+            return data;
+        }
+        
+        function loadFormData(data) {
+            if (data.project) {
+                document.getElementById('project-name').value = data.project.name || '';
+                document.getElementById('project-phase').value = data.project.phase || '';
+                document.getElementById('project-desc').value = data.project.description || '';
+            }
+            document.getElementById('evaluator').value = data.evaluator || '';
+            document.getElementById('date').value = data.date || new Date().toISOString().slice(0,10);
+            document.getElementById('summary-comments').value = data.summary || '';
+            
+            document.querySelectorAll('.rating-group').forEach(group => {
+                const itemId = group.getAttribute('data-item');
+                const ratingValue = data.ratings ? data.ratings[itemId] : null;
+                group.querySelectorAll('.rating-circle').forEach(circle => {
+                    circle.classList.remove('rating-selected');
+                    if (circle.getAttribute('data-rating') === ratingValue) {
+                        circle.classList.add('rating-selected');
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                const group = item.querySelector('.rating-group');
+                const itemId = group.getAttribute('data-item');
+                const note = data.notes ? data.notes[itemId] : '';
+                const textarea = item.querySelector('textarea');
+                if (textarea) {
+                    textarea.value = note;
+                    autoResizeTextarea.call(textarea); 
+                }
+            });
+            updateSectionScores();
+            textareas.forEach(textarea => autoResizeTextarea.call(textarea)); // Ensure all textareas resize
+        }
+
+        function saveFormDataToLocalStorage() {
+            const data = collectFormData();
+            localStorage.setItem('ui_ux_checklist_data_sim_game', JSON.stringify(data)); // Unique key
+        }
+
+        function loadFormDataFromLocalStorage() {
+            const savedData = localStorage.getItem('ui_ux_checklist_data_sim_game');
+            if (savedData) {
+                try {
+                    loadFormData(JSON.parse(savedData));
+                } catch (e) {
+                    console.error("Error parsing data from localStorage:", e);
+                    localStorage.removeItem('ui_ux_checklist_data_sim_game'); // Clear corrupted data
+                }
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-phase').value = '';
+            document.getElementById('project-desc').value = '';
+            document.getElementById('evaluator').value = '';
+            document.getElementById('date').value = new Date().toISOString().slice(0,10);
+            document.getElementById('summary-comments').value = '';
+            document.querySelectorAll('.rating-circle').forEach(c => c.classList.remove('rating-selected'));
+            textareas.forEach(textarea => {
+                textarea.value = '';
+                autoResizeTextarea.call(textarea);
+            });
+            updateSectionScores();
+            localStorage.removeItem('ui_ux_checklist_data_sim_game');
+        }
+
+        const sectionMaxScores = {
+            'section-1': 25, 'section-2': 30, 'section-3': 25, 'section-4': 25, 
+            'section-5': 25, 'section-6': 25, 'section-7': 30
+        };
+        const sectionItemsTotalCount = { 
+            'section-1': 5, 'section-2': 6, 'section-3': 5, 'section-4': 5, 
+            'section-5': 5, 'section-6': 5, 'section-7': 6
+        };
+        const sectionNames = {
+            'section-1': 'I. 总体原则与策略', 'section-2': 'II. 信息呈现与组织',
+            'section-3': 'III. 操作便捷性与交互设计', 'section-4': 'IV. 反馈与错误处理',
+            'section-5': 'V. 视觉设计与美学', 'section-6': 'VI. 新手引导与帮助',
+            'section-7': 'VII. 可访问性'
+        };
+
+        function updateSectionScores() {
+            let totalScore = 0, totalNaItems = 0, totalEffectiveMaxScore = 0;
+            const currentSectionScores = Object.fromEntries(Object.keys(sectionMaxScores).map(k => [k, 0]));
+            const currentSectionNaCounts = Object.fromEntries(Object.keys(sectionMaxScores).map(k => [k, 0]));
+            const scoreDistribution = { good: 0, medium: 0, bad: 0, na: 0 };
+
+            document.querySelectorAll('.rating-group').forEach(group => {
+                const itemId = group.getAttribute('data-item');
+                const sectionId = `section-${itemId.split('.')[0]}`;
+                const selected = group.querySelector('.rating-selected');
+                if (selected) {
+                    const rating = selected.getAttribute('data-rating');
+                    if (rating === 'na') {
+                        scoreDistribution.na++;
+                        totalNaItems++;
+                        if (currentSectionNaCounts[sectionId] !== undefined) currentSectionNaCounts[sectionId]++;
+                    } else {
+                        const score = parseInt(rating);
+                        if (!isNaN(score)) {
+                            totalScore += score;
+                            if (currentSectionScores[sectionId] !== undefined) currentSectionScores[sectionId] += score;
+                            if (score >= 4) scoreDistribution.good++;
+                            else if (score >= 2) scoreDistribution.medium++;
+                            else scoreDistribution.bad++;
+                        }
+                    }
+                }
+            });
+
+            Object.keys(sectionMaxScores).forEach(sectionKey => {
+                const ratedItemsCount = sectionItemsTotalCount[sectionKey] - currentSectionNaCounts[sectionKey];
+                const effectiveMaxForSection = ratedItemsCount * 5;
+                totalEffectiveMaxScore += effectiveMaxForSection;
+                const header = document.querySelector(`.section-header[data-section="${sectionKey}"]`);
+                if (header) {
+                    const scoreDisplay = header.querySelector('.section-score span');
+                    if (scoreDisplay) { // Update only the score part
+                         scoreDisplay.textContent = `${currentSectionScores[sectionKey]}`;
+                    }
+                    // To update the full text:
+                    header.querySelector('.section-score').innerHTML = `总分: <span class="font-bold">${currentSectionScores[sectionKey]}</span>/${effectiveMaxForSection} (不适用: ${currentSectionNaCounts[sectionKey]})`;
+                }
+            });
+            
+            document.getElementById('total-score').innerHTML = `总分: <span class="font-bold">${totalScore}</span>/${totalEffectiveMaxScore > 0 ? totalEffectiveMaxScore : totalMaxScoreOverall} (不适用: ${totalNaItems})`;
+            document.getElementById('good-items').textContent = `(${scoreDistribution.good})`;
+            document.getElementById('medium-items').textContent = `(${scoreDistribution.medium})`;
+            document.getElementById('bad-items').textContent = `(${scoreDistribution.bad})`;
+            document.getElementById('na-items').textContent = `(${scoreDistribution.na})`;
+            
+            updatePriorityTable(currentSectionScores, currentSectionNaCounts);
+            updateScoreChart(currentSectionScores, currentSectionNaCounts); 
+        }
+        
+        const totalMaxScoreOverall = Object.values(sectionMaxScores).reduce((sum, val) => sum + val, 0);
+
+        function updatePriorityTable(currentSectionScores, currentSectionNaCounts) {
+            const tableBody = document.getElementById('priority-table');
+            tableBody.innerHTML = ''; 
+
+            const lowScoreCountsBySection = {};
+            document.querySelectorAll('.rating-group').forEach(group => {
+                const itemId = group.getAttribute('data-item');
+                const sectionNumber = itemId.split('.')[0];
+                const sectionId = `section-${sectionNumber}`;
+                const selected = group.querySelector('.rating-selected');
+                if (selected) {
+                    const ratingVal = selected.getAttribute('data-rating');
+                    if (ratingVal !== 'na') {
+                        const rating = parseInt(ratingVal);
+                        if (rating <= 2) { 
+                            if (!lowScoreCountsBySection[sectionId]) {
+                                lowScoreCountsBySection[sectionId] = { '1': 0, '2': 0 };
+                            }
+                            if (rating === 1) lowScoreCountsBySection[sectionId]['1']++;
+                            if (rating === 2) lowScoreCountsBySection[sectionId]['2']++;
+                        }
+                    }
+                }
+            });
+
+            const sectionsData = Object.entries(currentSectionScores).map(([key, score]) => {
+                const totalItems = sectionItemsTotalCount[key];
+                const naItems = currentSectionNaCounts[key];
+                const ratedItems = totalItems - naItems;
+                const effectiveMax = ratedItems * 5;
+                const percentage = effectiveMax > 0 ? (score / effectiveMax) * 100 : (ratedItems === 0 ? -1 : 0); // -1 for all N/A
+
+                let priority = '', suggestion = '', bgColorClass = 'bg-gray-50';
+                if (percentage === -1 && totalItems > 0) { // All N/A or unrated
+                    priority = 'N/A'; suggestion = '本部分所有项目均标记为不适用或未评分。'; bgColorClass = 'bg-gray-100';
+                } else if (ratedItems === 0) { // No items in section (should not happen) or all NA & unrated
+                    return null;
+                } else if (percentage < 60) {
+                    priority = '高'; suggestion = '需要重点关注和重新设计'; bgColorClass = 'bg-red-100 text-red-800';
+                } else if (percentage < 80) {
+                    priority = '中'; suggestion = '需要适当改进'; bgColorClass = 'bg-yellow-100 text-yellow-800';
+                } else {
+                    priority = '低'; suggestion = '保持现状，可考虑小幅度优化'; bgColorClass = 'bg-green-100 text-green-800';
+                }
+                return { key, name: sectionNames[key], score, effectiveMax, percentage, priority, suggestion, bgColorClass, naItems, ratedItems };
+            }).filter(s => s !== null).sort((a, b) => {
+                const priorityOrder = {'高': 1, '中': 2, '低': 3, 'N/A': 4};
+                return (priorityOrder[a.priority] - priorityOrder[b.priority]) || (a.percentage - b.percentage);
+            });
+
+            if (sectionsData.length === 0 || sectionsData.every(s => s.ratedItems === 0 && s.naItems === sectionItemsTotalCount[s.key])) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="p-3 border text-center text-gray-500">请完成评估以获取建议</td></tr>`;
+            } else {
+                sectionsData.forEach(s => {
+                    const row = tableBody.insertRow();
+                    row.insertCell().outerHTML = `<td class="p-2 border ${s.bgColorClass} text-sm">${s.priority}</td>`;
+                    
+                    let nameContent = s.name;
+                    const lowScores = lowScoreCountsBySection[s.key];
+                    if (lowScores && (lowScores['1'] > 0 || lowScores['2'] > 0)) {
+                        nameContent += `<span class="block text-xs mt-1">`;
+                        if (lowScores['1'] > 0) nameContent += `<span class="text-red-700 font-semibold">${lowScores['1']}项1分</span>`;
+                        if (lowScores['2'] > 0) nameContent += `${lowScores['1'] > 0 ? ', ' : ''}<span class="text-orange-600 font-semibold">${lowScores['2']}项2分</span>`;
+                        nameContent += `</span>`;
+                    }
+                    row.insertCell().outerHTML = `<td class="p-2 border text-sm">${nameContent}</td>`;
+
+                    let scoreText = `${s.score}/${s.effectiveMax} (${s.ratedItems > 0 ? Math.round(s.percentage) + '%' : '未评'})`;
+                    if (s.naItems > 0) scoreText += `<br><span class="text-xs text-gray-500">(N/A: ${s.naItems})</span>`;
+                    if (s.ratedItems === 0 && s.naItems > 0) scoreText = `未评分<br><span class="text-xs text-gray-500">(N/A: ${s.naItems})</span>`;
+                    row.insertCell().outerHTML = `<td class="p-2 border text-sm">${scoreText}</td>`;
+                    row.insertCell().outerHTML = `<td class="p-2 border text-sm">${s.suggestion}</td>`;
+                });
+            }
+        }
+        
+        let scoreChartInstance = null;
+        function updateScoreChart(currentSectionScores, currentSectionNaCounts) {
+            const ctx = document.getElementById('score-chart').getContext('2d');
+            const labels = Object.keys(currentSectionScores).map(key => sectionNames[key].replace(/^[IVX]+\.\s*/, ''));
+            
+            const datasetsData = Object.entries(currentSectionScores).map(([key, score]) => {
+                const totalItems = sectionItemsTotalCount[key];
+                const naItems = currentSectionNaCounts[key];
+                const ratedItems = totalItems - naItems;
+                const effectiveMax = ratedItems * 5;
+                return { score, effectiveMax, originalMax: sectionMaxScores[key] };
+            });
+
+            const actualScores = datasetsData.map(d => d.score);
+            const effectiveMaxScores = datasetsData.map(d => d.effectiveMax);
+            // const originalMaxScores = datasetsData.map(d => d.originalMax); // Use for a consistent "total possible" bar if needed
+
+            if (scoreChartInstance) scoreChartInstance.destroy();
+            
+            scoreChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: '当前得分',
+                            data: actualScores,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)', // Tailwind blue-500
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '已评估项满分', 
+                            data: effectiveMaxScores,
+                            backgroundColor: 'rgba(209, 213, 219, 0.5)', // Tailwind gray-300
+                            borderColor: 'rgba(156, 163, 175, 1)', // Tailwind gray-400
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, suggestedMax: Math.max(...Object.values(sectionMaxScores)) + 5, ticks: { stepSize: 5 }}},
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    label += context.raw;
+                                    const sectionKey = Object.keys(sectionMaxScores)[context.dataIndex];
+                                    const naCount = currentSectionNaCounts[sectionKey];
+                                    if (context.datasetIndex === 0 && naCount > 0) { // For "Current Score" bar
+                                         label += ` (N/A: ${naCount} 项)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('date').value = new Date().toISOString().slice(0,10);
+        loadFormDataFromLocalStorage();
+        textareas.forEach(textarea => autoResizeTextarea.call(textarea));
+    });
+</script>
+</body>
+</html>
