@@ -131,6 +131,17 @@
             background-color: color-mix(in srgb, var(--danger) 80%, black);
             box-shadow: 0 5px 15px rgba(231, 111, 81, 0.3);
         }
+
+        /* Focus states for accessibility */
+        .btn:focus,
+        .evaluation-select:focus,
+        .notes-textarea:focus,
+        .final-summary-textarea:focus,
+        summary:focus {
+            outline: none; /* Remove default browser outline */
+            border-color: var(--primary); /* Consistent border color */
+            box-shadow: 0 0 0 4px rgba(34, 146, 164, 0.3); /* Clear focus indicator */
+        }
         
         /* Progress Overview */
         .progress-overview {
@@ -292,43 +303,46 @@
         /* Column Widths for main tables */
         .collapsible-table:not(.methodology-table) th:nth-child(1), 
         .collapsible-table:not(.methodology-table) td:nth-child(1) { /* 评估项 (Checklist Item) */
-            width: 20%;
+            width: 15%; /* Adjusted for new columns */
             font-weight: 600;
             color: var(--primary);
         }
         
         .collapsible-table:not(.methodology-table) th:nth-child(2), 
         .collapsible-table:not(.methodology-table) td:nth-child(2) { /* 评估要点 (Evaluation Points) */
-            width: 45%;
+            width: 40%; /* Adjusted for new columns */
         }
         
         .collapsible-table:not(.methodology-table) th:nth-child(3), 
         .collapsible-table:not(.methodology-table) td:nth-child(3) { /* 说明 (Notes) */
-            width: 25%;
+            width: 15%; /* Adjusted for new columns */
         }
         
         .collapsible-table:not(.methodology-table) th:nth-child(4), 
         .collapsible-table:not(.methodology-table) td:nth-child(4) { /* 评估结果 (Evaluation Result) */
-            width: 10%;
+            width: 10%; /* Adjusted for new columns */
+        }
+        .collapsible-table:not(.methodology-table) th:nth-child(5), 
+        .collapsible-table:not(.methodology-table) td:nth-child(5) { /* 主要负责人 */
+            width: 10%; 
+        }
+        .collapsible-table:not(.methodology-table) th:nth-child(6), 
+        .collapsible-table:not(.methodology-table) td:nth-child(6) { /* 次要负责人 */
+            width: 10%; 
         }
 
-        /* Adjustments for the specific methodology table (2 columns) */
-        .collapsible-table.methodology-table th:nth-child(1) { /* 评估项 */
-            width: 25%;
+
+        /* Adjustments for the specific methodology table (now 2 columns instead of 4) */
+        .collapsible-table.methodology-table th:nth-child(1),
+        .collapsible-table.methodology-table td:nth-child(1) { /* 评估项 */
+            width: 25%; /* Adjusted from 25% to account for removal of 2 columns */
         }
-        .collapsible-table.methodology-table th:nth-child(2) { /* 方法实践 */
-            width: 75%; /* 100% - 25% (评估项) = 75% */
+        .collapsible-table.methodology-table th:nth-child(2),
+        .collapsible-table.methodology-table td:nth-child(2) { /* 方法实践 */
+            width: 75%; /* Adjusted from 75% to account for removal of 2 columns */
         }
-        /* No th:nth-child(3) for methodology-table as Evaluation Result column is removed */
-        
-        /* Specific td width for methodology table */
-        .collapsible-table.methodology-table td:nth-child(1) {
-            width: 25%;
-        }
-        .collapsible-table.methodology-table td:nth-child(2) {
-            width: 75%;
-        }
-        /* No td:nth-child(3) for methodology-table as Evaluation Result column is removed */
+        /* Removed specific widths for th:nth-child(3), td:nth-child(3), th:nth-child(4), td:nth-child(4) for methodology-table */
+
 
         /* Evaluation Result Styles */
         .evaluation-select {
@@ -415,6 +429,18 @@
             content: "示例：";
             font-weight: 600;
             color: var(--accent);
+        }
+        /* Make content inside <em> tags within example-text bold */
+        .example-text em {
+            font-weight: bold;
+        }
+
+        /* New style for the evaluation question titles */
+        .evaluation-question-title {
+            color: var(--primary); /* Blue as requested */
+            font-weight: 600; /* Semi-bold */
+            display: block; /* Ensures it acts like a block element for spacing */
+            margin-bottom: 8px; /* Space below the question */
         }
 
         /* =========================================== */
@@ -620,6 +646,26 @@
                 flex: 1 0 33%;
                 margin-bottom: 10px;
             }
+
+            /* Adjust column widths for main tables on medium screens */
+            .collapsible-table:not(.methodology-table) th:nth-child(1), /*评估项*/
+            .collapsible-table:not(.methodology-table) td:nth-child(1) { width: 18%; } 
+            .collapsible-table:not(.methodology-table) th:nth-child(2), /*评估要点*/
+            .collapsible-table:not(.methodology-table) td:nth-child(2) { width: 38%; } 
+            .collapsible-table:not(.methodology-table) th:nth-child(3), /*说明*/
+            .collapsible-table:not(.methodology-table) td:nth-child(3) { width: 15%; } 
+            .collapsible-table:not(.methodology-table) th:nth-child(4), /*评估结果*/
+            .collapsible-table:not(.methodology-table) td:nth-child(4) { width: 9%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(5), /*主要负责人*/
+            .collapsible-table:not(.methodology-table) td:nth-child(5) { width: 10%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(6), /*次要负责人*/
+            .collapsible-table:not(.methodology-table) td:nth-child(6) { width: 10%; }
+
+            /* Methodology table on medium screens (2 columns) */
+            .collapsible-table.methodology-table th:nth-child(1),
+            .collapsible-table.methodology-table td:nth-child(1) { width: 30%; } /* 评估项 */
+            .collapsible-table.methodology-table th:nth-child(2),
+            .collapsible-table.methodology-table td:nth-child(2) { width: 70%; } /* 方法实践 */
         }
         
         @media (max-width: 768px) {
@@ -652,19 +698,23 @@
 
             /* Adjust column widths for main tables on small screens */
             .collapsible-table:not(.methodology-table) th:nth-child(1), /*评估项*/
-            .collapsible-table:not(.methodology-table) td:nth-child(1) { width: 30%; } 
+            .collapsible-table:not(.methodology-table) td:nth-child(1) { width: 20%; } 
             .collapsible-table:not(.methodology-table) th:nth-child(2), /*评估要点*/
-            .collapsible-table:not(.methodology-table) td:nth-child(2) { width: 35%; } 
+            .collapsible-table:not(.methodology-table) td:nth-child(2) { width: 28%; } /* Further compressed */
             .collapsible-table:not(.methodology-table) th:nth-child(3), /*说明*/
-            .collapsible-table:not(.methodology-table) td:nth-child(3) { width: 18%; } 
+            .collapsible-table:not(.methodology-table) td:nth-child(3) { width: 15%; } /* Further compressed */
             .collapsible-table:not(.methodology-table) th:nth-child(4), /*评估结果*/
-            .collapsible-table:not(.methodology-table) td:nth-child(4) { width: 17%; }
+            .collapsible-table:not(.methodology-table) td:nth-child(4) { width: 9%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(5), /*主要负责人*/
+            .collapsible-table:not(.methodology-table) td:nth-child(5) { width: 14%; } /* Adjusted */
+            .collapsible-table:not(.methodology-table) th:nth-child(6), /*次要负责人*/
+            .collapsible-table:not(.methodology-table) td:nth-child(6) { width: 14%; } /* Adjusted */
 
-            /* Specific adjustments for methodology table on small screens (now 2 columns) */
-            .collapsible-table.methodology-table th:nth-child(1) { width: 40%; } /* 评估项 */
-            .collapsible-table.methodology-table td:nth-child(1) { width: 40%; }
-            .collapsible-table.methodology-table th:nth-child(2) { width: 60%; } /* 方法实践 (100% - 40%) */
-            .collapsible-table.methodology-table td:nth-child(2) { width: 60%; }
+            /* Methodology table on small screens (2 columns) */
+            .collapsible-table.methodology-table th:nth-child(1),
+            .collapsible-table.methodology-table td:nth-child(1) { width: 35%; } /* 评估项 */
+            .collapsible-table.methodology-table th:nth-child(2),
+            .collapsible-table.methodology-table td:nth-child(2) { width: 65%; } /* 方法实践 */
             
             /* 移动端优化方法实践内容 */
             .methodology-content {
@@ -715,6 +765,19 @@
                 padding: 0.8rem;
                 margin: 1rem 0;
             }
+            /* Main table columns on very small screens, adjust to prevent excessive overflow */
+            .collapsible-table:not(.methodology-table) th:nth-child(1),
+            .collapsible-table:not(.methodology-table) td:nth-child(1) { width: 22%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(2),
+            .collapsible-table:not(.methodology-table) td:nth-child(2) { width: 25%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(3),
+            .collapsible-table:not(.methodology-table) td:nth-child(3) { width: 13%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(4),
+            .collapsible-table:not(.methodology-table) td:nth-child(4) { width: 8%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(5),
+            .collapsible-table:not(.methodology-table) td:nth-child(5) { width: 16%; }
+            .collapsible-table:not(.methodology-table) th:nth-child(6),
+            .collapsible-table:not(.methodology-table) td:nth-child(6) { width: 16%; }
         }
     </style>
 </head>
@@ -763,6 +826,24 @@
             <strong>目的：</strong>本清单旨在为游戏开发团队提供一个系统化的评估框架，以确保模拟经营游戏项目在立项阶段具备充分的市场、产品、技术、商业和风险可行性。<br>
             <strong>使用说明：</strong>请团队成员对照以下各项进行自查与评估，并在"评估结果"栏选择相应状态，在"说明"栏填写具体说明、数据支撑或待解决的问题。请特别留意"举例说明"部分，它将帮助您理解每个评估点在实际工作中的具体体现。
         </p>
+
+        <!-- 新增：项目成员职责说明 -->
+        <h2 style="margin-top: 40px; margin-bottom: 20px; text-align: center; color: var(--primary);">项目成员职责说明</h2>
+        <div class="intro-text" style="background: linear-gradient(135deg, color-mix(in srgb, var(--isabelline) 90%, var(--accent) 5%) 0%, color-mix(in srgb, var(--isabelline) 80%, var(--primary) 10%) 100%); border-left: 5px solid var(--accent);">
+            <p><strong>P (主要负责人):</strong> 该项评估的主要推动者、数据收集者和决策建议者。</p>
+            <p><strong>S (次要负责人):</strong> 在该项评估中提供重要支持、数据或协助的角色。</p>
+            <p><strong>总负责人 (决策者):</strong> 项目经理、制作人/商务负责人</p>
+            <ul>
+                <li><strong>项目经理:</strong> 负责项目的整体规划、进度、资源协调、风险管理、跨部门沟通。</li>
+                <li><strong>游戏策划:</strong> 负责游戏核心玩法、系统设计、数值平衡、用户体验、内容创作。</li>
+                <li><strong>技术负责人:</strong> 负责技术架构、引擎选型、功能实现、性能优化、技术瓶颈攻克。</li>
+                <li><strong>美术负责人:</strong> 负责美术风格、UI/UX设计、资产制作、视觉表现。</li>
+                <li><strong>市场/运营负责人:</strong> 负责市场研究、用户获取、品牌建设、社区运营、宣发策略。</li>
+                <li><strong>制作人/商务负责人:</strong> 负责商业模式、财务规划、IP合作、发行策略、投资对接。</li>
+                <li><strong>数值策划:</strong> 负责核心数值系统、经济模型、付费点平衡。</li>
+                <li><strong>质量保证负责人:</strong> 主要负责测试，但在立项阶段提供可测试性、质量标准的输入。</li>
+            </ul>
+        </div>
         
         <!-- (一)市场与定位可行性 -->
         <details open>
@@ -774,83 +855,105 @@
                         <th>评估要点 (Evaluation Points) 及举例说明</th>
                         <th>说明</th>
                         <th>评估结果</th>
+                        <th>主要负责人</th>
+                        <th>次要负责人</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td rowspan="4">目标用户画像清晰度</td>
-                        <td>是否已清晰定义核心目标用户群体（基础特征、游戏行为、核心动机、需求痛点）？
-                            <div class="example-text"><em>例如：我们的核心用户是25-35岁的都市白领女性，偏好美术治愈、玩法轻度、有社交互动和收集元素的农场/咖啡厅模拟游戏，周末或通勤碎片时间玩。她们可能感到现实生活压力大，希望在游戏中寻找放松和成就感。</em></div>
+                        <td><span class="evaluation-question-title">是否已清晰定义核心目标用户群体（基础特征、游戏行为、核心动机、需求痛点）？</span>
+                            <div class="example-text"><em>例如：我们的核心用户是<span style="font-weight: bold;">25-35岁的都市白领女性，偏好美术治愈、玩法轻度、有社交互动和收集元素的农场/咖啡厅模拟游戏，周末或通勤碎片时间玩。她们可能感到现实生活压力大，希望在游戏中寻找放松和成就感。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="核心用户特征已明确，但其深层动机仍需访谈挖掘。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="核心用户特征已明确，但其深层动机仍需访谈挖掘。" aria-label="目标用户画像清晰度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="目标用户画像清晰度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划、制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>是否有初步用户调研（问卷、访谈、竞品评论分析）支撑用户画像？
-                            <div class="example-text"><em>例如：我们分析了《星露谷物语》、《动物森友会》和《咖啡厅物语》在TapTap/Steam的用户评论，并对10名符合画像的用户进行了线上访谈，收集了他们对现有游戏的喜好和痛点。</em></div>
+                        <td><span class="evaluation-question-title">是否有初步用户调研（问卷、访谈、竞品评论分析）支撑用户画像？</span>
+                            <div class="example-text"><em>例如：我们分析了<span style="font-weight: bold;">《星露谷物语》、《动物森友会》和《咖啡厅物语》在TapTap/Steam的用户评论，并对10名符合画像的用户进行了线上访谈，收集了他们对现有游戏的喜好和痛点。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已完成初步的用户调研，结果显示与预设画像基本吻合。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已完成初步的用户调研，结果显示与预设画像基本吻合。" aria-label="用户调研支撑用户画像说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="用户调研支撑用户画像评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划</td>
                     </tr>
                     <tr>
-                        <td>能否构建1-2个具体的Persona，团队对其产生共鸣？
-                            <div class="example-text"><em>例如：Persona "小雅"，28岁，设计师，喜欢《动物森友会》，希望有更多自定义和社交互动；痛点是现有游戏内容更新慢，朋友不常在线。</em></div>
+                        <td><span class="evaluation-question-title">能否构建1-2个具体的Persona，团队对其产生共鸣？</span>
+                            <div class="example-text"><em>例如：Persona <span style="font-weight: bold;">"小雅"，28岁，设计师，喜欢《动物森友会》，希望有更多自定义和社交互动；痛点是现有游戏内容更新慢，朋友不常在线。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已创建“都市白领小雅”和“佛系养成大叔王哥”两个Persona，团队对他们的需求已达成共识。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已创建“都市白领小雅”和“佛系养成大叔王哥”两个Persona，团队对他们的需求已达成共识。" aria-label="Persona构建说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="Persona构建评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划</td>
                     </tr>
                     <tr>
-                        <td>描绘的用户画像是否避免泛化或理想化？
-                            <div class="example-text"><em>例如：避免描述为“所有喜欢模拟经营的玩家”，而是聚焦到特定群体。</em></div>
+                        <td><span class="evaluation-question-title">描绘的用户画像是否避免泛化或理想化？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">避免描述为“所有喜欢模拟经营的玩家”，而是聚焦到特定群体。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="画像聚焦于特定年龄段和兴趣偏好，避免了过于宽泛导致设计方向不明确。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="画像聚焦于特定年龄段和兴趣偏好，避免了过于宽泛导致设计方向不明确。" aria-label="用户画像避免泛化说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="用户画像避免泛化评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">细分赛道选择与竞争格局分析</td>
-                        <td>所选细分赛道（如工业、职业、特定文化背景模拟等）的潜力（市场规模、增长）预估？
-                            <div class="example-text"><em>例如：根据Newzoo报告，亚洲女性向休闲模拟市场年增长X%，我们聚焦于‘国风古镇营造’这一细分赛道，预计未来3年市场规模可达Y亿。</em></div>
+                        <td><span class="evaluation-question-title">所选细分赛道（如工业、职业、特定文化背景模拟等）的潜力（市场规模、增长）预估？</span>
+                            <div class="example-text"><em>例如：根据Newzoo报告，<span style="font-weight: bold;">亚洲女性向休闲模拟市场年增长X%，我们聚焦于‘国风古镇营造’这一细分赛道，预计未来3年市场规模可达Y亿。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="国风模拟赛道潜力巨大，但头部产品已占据部分市场。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="国风模拟赛道潜力巨大，但头部产品已占据部分市场。" aria-label="细分赛道潜力预估说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="细分赛道潜力预估评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>是否已识别主要竞品，并从核心玩法、美术、商业模式、市场推广、用户口碑等多维度进行深入分析？
-                            <div class="example-text"><em>例如：深度分析《模拟城市：我是市长》、《都市天际线》和《江南百景图》，对比其核心循环、付费设计、留存数据、以及在社媒上的用户反馈（如《江南百景图》在国风模拟领域用户粘性高，但后期内容消耗快）。</em></div>
+                        <td><span class="evaluation-question-title">是否已识别主要竞品，并从核心玩法、美术、商业模式、市场推广、用户口碑等多维度进行深入分析？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">深度分析《模拟城市：我是市长》、《都市天际线》和《江南百景图》，对比其核心循环、付费设计、留存数据、以及在社媒上的用户反馈（如《江南百景图》在国风模拟领域用户粘性高，但后期内容消耗快）。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已完成3款核心竞品的详细分析报告，并识别出其优缺点。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已完成3款核心竞品的详细分析报告，并识别出其优缺点。" aria-label="竞品分析说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="竞品分析评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划、制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>我们的产品概念与竞品相比，能提供哪些独特的价值点（题材、核心机制、美术风格、数值体验、情感共鸣）？
-                            <div class="example-text"><em>例如：我们的特色是融合了真实历史文化建筑，加入了AIGC驱动的NPC事件系统，提供更具沉浸感的‘历史城镇养成’体验；或在传统农场模拟中加入了‘季节庆典’和‘传统手工艺坊’玩法。</em></div>
+                        <td><span class="evaluation-question-title">我们的产品概念与竞品相比，能提供哪些独特的价值点（题材、核心机制、美术风格、数值体验、情感共鸣）？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">我们的特色是融合了真实历史文化建筑，加入了AIGC驱动的NPC事件系统，提供更具沉浸感的‘历史城镇养成’体验；或在传统农场模拟中加入了‘季节庆典’和‘传统手工艺坊’玩法。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="产品的核心差异化是‘AIGC驱动的动态NPC关系网’，旨在提供前所未有的情感沉浸。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="产品的核心差异化是‘AIGC驱动的动态NPC关系网’，旨在提供前所未有的情感沉浸。" aria-label="产品独特价值点说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="产品独特价值点评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>市场/运营负责人、制作人/商务负责人</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">市场趋势契合度与前瞻性</td>
-                        <td>产品概念是否主动融入或预见了未来2-3年模拟经营市场的新趋势（AIGC、元宇宙、情感化叙事、社交生态、跨端融合）？
-                            <div class="example-text"><em>例如：我们计划利用AIGC生成动态的市民需求和任务，提升游戏世界的生动性；或考虑在移动端和PC端提供无缝的云存档体验；引入更丰富的NPC关系网，强化情感叙事。</em></div>
+                        <td><span class="evaluation-question-title">产品概念是否主动融入或预见了未来2-3年模拟经营市场的新趋势（AIGC、元宇宙、情感化叙事、社交生态、跨端融合）？</span>
+                            <div class="example-text"><em>例如：我们计划利用<span style="font-weight: bold;">AIGC生成动态的市民需求和任务，提升游戏世界的生动性；或考虑在移动端和PC端提供无缝的云存档体验；引入更丰富的NPC关系网，强化情感叙事。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已将AIGC技术融入NPC系统，但元宇宙相关特性仍在探索中。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已将AIGC技术融入NPC系统，但元宇宙相关特性仍在探索中。" aria-label="市场趋势融入说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="市场趋势融入评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>市场/运营负责人、技术负责人</td>
                     </tr>
                     <tr>
-                        <td>项目是选择在成熟模式上做精细化改良，还是有潜力成为新兴方向的早期开拓者？
-                            <div class="example-text"><em>例如：我们不追求成为下一个《文明》，而是希望在‘生态模拟+城市管理’领域成为先行者，解决现有产品生态系统过于简化的问题。</em></div>
+                        <td><span class="evaluation-question-title">项目是选择在成熟模式上做精细化改良，还是有潜力成为新兴方向的早期开拓者？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">我们不追求成为下一个《文明》，而是希望在‘生态模拟+城市管理’领域成为先行者，解决现有产品生态系统过于简化的问题。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="项目定位为新兴方向的早期开拓者，风险较高但潜在收益大。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="项目定位为新兴方向的早期开拓者，风险较高但潜在收益大。" aria-label="项目定位说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="项目定位评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>制作人/商务负责人</td>
+                        <td>游戏策划、市场/运营负责人</td>
                     </tr>
                     <tr>
-                        <td>所选趋势的真实性、可持续性以及与团队基因、核心玩法的匹配度？
-                            <div class="example-text"><em>例如：AIGC虽是热点，但团队是否具备相关技术储备，如何避免盲目追赶导致产品失去核心特色。</em></div>
+                        <td><span class="evaluation-question-title">所选趋势的真实性、可持续性以及与团队基因、核心玩法的匹配度？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">AIGC虽是热点，但团队是否具备相关技术储备，如何避免盲目追赶导致产品失去核心特色。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="AIGC技术储备不足，计划外包核心AI模块。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="AIGC技术储备不足，计划外包核心AI模块。" aria-label="趋势匹配度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="趋势匹配度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>技术负责人</td>
+                        <td>游戏策划、制作人/商务负责人、市场/运营负责人</td>
                     </tr>
                 </tbody>
             </table>
@@ -866,143 +969,181 @@
                         <th>评估要点 (Evaluation Points) 及举例说明</th>
                         <th>说明</th>
                         <th>评估结果</th>
+                        <th>主要负责人</th>
+                        <th>次要负责人</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td rowspan="4">核心循环机制 (Core Loop) 的吸引力与可持续性</td>
-                        <td>游戏核心循环（资源收集 → 加工/建设 → 产出/目标 → 奖励/新内容 → 再投入）是否清晰、闭合、富有趣味性？
-                            <div class="example-text"><em>例如：玩家通过建造农田（资源收集）→ 加工农产品（加工）→ 售卖给市民（产出/达成目标）→ 获得金币和经验（奖励）→ 解锁新建筑和科技（新内容）→ 投入金币和新资源建造更多设施。</em></div>
+                        <td><span class="evaluation-question-title">游戏核心循环（资源收集 → 加工/建设 → 产出/目标 → 奖励/新内容 → 再投入）是否清晰、闭合、富有趣味性？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">玩家通过建造农田（资源收集）→ 加工农产品（加工）→ 售卖给市民（产出/达成目标）→ 获得金币和经验（奖励）→ 解锁新建筑和科技（新内容）→ 投入金币和新资源建造更多设施。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="核心循环已定义，但需要原型验证其趣味性。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="核心循环已定义，但需要原型验证其趣味性。" aria-label="核心循环机制吸引力说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="核心循环机制吸引力评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>该循环能否在游戏的初期、中期、后期提供新的挑战、目标和深度，以避免玩家过早感到重复和乏味？
-                            <div class="example-text"><em>例如：初期：耕种-收获-售卖；中期：解锁新地块、建造加工厂、开拓市场；后期：建立全球贸易网络、研发高科技农业、参与世界生态治理。</em></div>
+                        <td><span class="evaluation-question-title">该循环能否在游戏的初期、中期、后期提供新的挑战、目标和深度，以避免玩家过早感到重复和乏味？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">初期：耕种-收获-售卖；中期：解锁新地块、建造加工厂、开拓市场；后期：建立全球贸易网络、研发高科技农业、参与世界生态治理。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已规划不同阶段的目标，但中期内容深度有待进一步细化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已规划不同阶段的目标，但中期内容深度有待进一步细化。" aria-label="循环可持续性说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="循环可持续性评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>正反馈的强度、频率和多样性是否足够，确保玩家努力能得到及时且有意义的回报？惩罚机制（如经营不善的后果）是否合理且具有引导性，而非单纯的挫败感？
-                            <div class="example-text"><em>例如：建筑完成瞬间的动画特效、经验条增长、金币叮咚声、市民的正面评价、解锁新科技的成就感；惩罚如“经营不善导致市民满意度下降，影响税收”，而非“一无所有”。</em></div>
+                        <td><span class="evaluation-question-title">正反馈的强度、频率和多样性是否足够，确保玩家努力能得到及时且有意义的回报？惩罚机制（如经营不善的后果）是否合理且具有引导性，而非单纯的挫败感？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">建筑完成瞬间的动画特效、经验条增长、金币叮咚声、市民的正面评价、解锁新科技的成就感；惩罚如“经营不善导致市民满意度下降，影响税收”，而非“一无所有”。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="正反馈系统已设计，但惩罚机制的平衡性需要更多测试验证。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="正反馈系统已设计，但惩罚机制的平衡性需要更多测试验证。" aria-label="正反馈与惩罚机制说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="正反馈与惩罚机制评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>核心循环复杂度是否与目标用户的认知水平和游戏时长预期相匹配，既不过于简单也不过于复杂？
-                            <div class="example-text"><em>例如：休闲玩家的核心循环应简单易懂，硬核玩家则可引入更多策略维度和数值挑战。</em></div>
+                        <td><span class="evaluation-question-title">核心循环复杂度是否与目标用户的认知水平和游戏时长预期相匹配，既不过于简单也不过于复杂？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">休闲玩家的核心循环应简单易懂，硬核玩家则可引入更多策略维度和数值挑战。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="复杂度与休闲玩家的预期匹配良好，但硬核玩家的深度满足有待挖掘。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="复杂度与休闲玩家的预期匹配良好，但硬核玩家的深度满足有待挖掘。" aria-label="循环复杂度匹配度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="循环复杂度匹配度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td></td>
                     </tr>
                     
                     <tr>
                         <td rowspan="4">核心模拟深度与广度</td>
-                        <td>游戏对于所模拟主题（无论是城市管理、商业帝国、农场生活还是太空殖民）的“真实感”与“趣味性”是如何平衡的？
-                            <div class="example-text"><em>例如：我们偏向于《双点医院》式的趣味经营，而非《缺氧》那样的硬核生存模拟；但会在核心产业链条（如农产品从种植、加工、运输到销售）上保持一定的策略深度。</em></div>
+                        <td><span class="evaluation-question-title">游戏对于所模拟主题（无论是城市管理、商业帝国、农场生活还是太空殖民）的“真实感”与“趣味性”是如何平衡的？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">我们偏向于《双点医院》式的趣味经营，而非《缺氧》那样的硬核生存模拟；但会在核心产业链条（如农产品从种植、加工、运输到销售）上保持一定的策略深度。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已找到趣味性与策略性的平衡点，但细节数值仍需打磨。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已找到趣味性与策略性的平衡点，但细节数值仍需打磨。" aria-label="模拟真实感与趣味性说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="模拟真实感与趣味性评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>美术负责人</td>
                     </tr>
                     <tr>
-                        <td>系统的复杂度是否与目标用户的认知水平、耐心和期望相匹配，避免曲高和寡或过于浅薄？
-                            <div class="example-text"><em>例如：针对大众用户，经济系统可简化为“供需平衡”而非复杂的“通货膨胀/紧缩”；但针对硬核玩家，可提供“天气系统影响作物产量”、“贸易伙伴外交关系影响物价”等深度机制。</em></div>
+                        <td><span class="evaluation-question-title">系统的复杂度是否与目标用户的认知水平、耐心和期望相匹配，避免曲高和寡或过于浅薄？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">针对大众用户，经济系统可简化为“供需平衡”而非复杂的“通货膨胀/紧缩”；但针对硬核玩家，可提供“天气系统影响作物产量”、“贸易伙伴外交关系影响物价”等深度机制。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="初步设计能满足大部分玩家，但如何深度挖掘硬核玩家的策略需求是挑战。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="初步设计能满足大部分玩家，但如何深度挖掘硬核玩家的策略需求是挑战。" aria-label="系统复杂度匹配度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="系统复杂度匹配度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>是否有足够的策略维度（如科技研发、政策调整、市场波动、员工管理、物流规划等）和决策空间，让玩家能够深入研究、探索不同发展路径并体验其结果？
-                            <div class="example-text"><em>例如：玩家需平衡工业污染与环境治理、税收高低对市民满意度的影响、工人福利与生产效率的矛盾。</em></div>
+                        <td><span class="evaluation-question-title">是否有足够的策略维度（如科技研发、政策调整、市场波动、员工管理、物流规划等）和决策空间，让玩家能够深入研究、探索不同发展路径并体验其结果？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">玩家需平衡工业污染与环境治理、税收高低对市民满意度的影响、工人福利与生产效率的矛盾。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已设计多条策略分支，但各分支的平衡性需后期测试。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已设计多条策略分支，但各分支的平衡性需后期测试。" aria-label="策略维度与决策空间说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="策略维度与决策空间评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>模拟的“深度”是否只是参数的堆砌，还是能涌现出有趣的动态博弈？模拟的“广度”是否导致游戏臃肿，还是各个子系统能有机互动？
-                            <div class="example-text"><em>例如：天气系统与农业生产联动，市民情绪与公共服务联动，形成有趣的连锁反应而非孤立模块。</em></div>
+                        <td><span class="evaluation-question-title">模拟的“深度”是否只是参数的堆砌，还是能涌现出有趣的动态博弈？模拟的“广度”是否导致游戏臃肿，还是各个子系统能有机互动？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">天气系统与农业生产联动，市民情绪与公共服务联动，形成有趣的连锁反应而非孤立模块。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已确保核心子系统间的联动，避免功能堆砌，但部分边缘系统联动仍需优化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已确保核心子系统间的联动，避免功能堆砌，但部分边缘系统联动仍需优化。" aria-label="模拟深度与广度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="模拟深度与广度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>技术负责人</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">独特卖点 (USP) 与创新要素</td>
-                        <td>您的产品在题材选择、核心机制设计、美术风格呈现、叙事方式、交互体验等方面，是否拥有至少1-2个真正能够打动目标用户、且现有竞品难以快速复制或超越的“闪光点”或“杀手锏”？
-                            <div class="example-text"><em>例如：我们引入了‘气候变化影响农作物’的动态系统，玩家需根据季节变化和极端天气调整种植策略；或‘NPC家族世代传承’，玩家能培养与他们代代相传的感情，影响其后代发展。</em></div>
+                        <td><span class="evaluation-question-title">您的产品在题材选择、核心机制设计、美术风格呈现、叙事方式、交互体验等方面，是否拥有至少1-2个真正能够打动目标用户、且现有竞品难以快速复制或超越的“闪光点”或“杀手锏”？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">我们引入了‘气候变化影响农作物’的动态系统，玩家需根据季节变化和极端天气调整种植策略；或‘NPC家族世代传承’，玩家能培养与他们代代相传的感情，影响其后代发展。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="核心USP是‘AIGC驱动的NPC命运模拟’，竞品尚未有此深度。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="核心USP是‘AIGC驱动的NPC命运模拟’，竞品尚未有此深度。" aria-label="产品独特卖点说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="产品独特卖点评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>市场/运营负责人、技术负责人</td>
                     </tr>
                     <tr>
-                        <td>这个创新点/USP是如何具体体现的？它如何转化为产品的核心竞争力，并在市场宣传中被有效传达给用户？
-                            <div class="example-text"><em>例如：通过宣传片展示AIGC驱动的NPC多样化人生轨迹，强调‘你不是在经营一个城市，而是在培养一个充满故事的家族’。</em></div>
+                        <td><span class="evaluation-question-title">这个创新点/USP是如何具体体现的？它如何转化为产品的核心竞争力，并在市场宣传中被有效传达给用户？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">通过宣传片展示AIGC驱动的NPC多样化人生轨迹，强调‘你不是在经营一个城市，而是在培养一个充满故事的家族’。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已在概念宣发中突出USP，市场反馈积极。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已在概念宣发中突出USP，市场反馈积极。" aria-label="创新点转化说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="创新点转化评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>市场/运营负责人</td>
                     </tr>
                     <tr>
-                        <td>USP是否解决了用户的痛点或满足了深层需求？它的感知门槛高不高？如果去掉这个USP，我们的产品还剩下什么？
-                            <div class="example-text"><em>例如：解决了玩家对传统模拟经营中NPC“工具人”的痛点，提供了深度情感体验，且在新手期即可初步感知NPC的独特性。</em></div>
+                        <td><span class="evaluation-question-title">USP是否解决了用户的痛点或满足了深层需求？它的感知门槛高不高？如果去掉这个USP，我们的产品还剩下什么？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">解决了玩家对传统模拟经营中NPC“工具人”的痛点，提供了深度情感体验，且在新手期即可初步感知NPC的独特性。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="USP感知门槛较低，但其深度体验需玩家投入一定时间才能完全感受到。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="USP感知门槛较低，但其深度体验需玩家投入一定时间才能完全感受到。" aria-label="USP价值与感知门槛说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="USP价值与感知门槛评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>市场/运营负责人</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="4">成长体系与目标感设计</td>
-                        <td>玩家在游戏中的短期、中期和长期目标是否清晰、富有吸引力且层层递进？
-                            <div class="example-text"><em>例如：短期：完成每日商店订单，升级一个建筑；中期：解锁海岸线新区域，建设港口，打通一条新产业链；长期：在全球地图上建立多个连锁主题公园，成为娱乐大亨，或揭示世界背后的科技秘密。</em></div>
+                        <td><span class="evaluation-question-title">玩家在游戏中的短期、中期和长期目标是否清晰、富有吸引力且层层递进？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">短期：完成每日商店订单，升级一个建筑；中期：解锁海岸线新区域，建设港口，打通一条新产业链；长期：在全球地图上建立多个连锁主题公园，成为娱乐大亨，或揭示世界背后的科技秘密。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="目标层级已规划，但长期目标仍需具体化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="目标层级已规划，但长期目标仍需具体化。" aria-label="成长体系目标清晰度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="成长体系目标清晰度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>成长路径（如等级提升、技能树解锁、科技研发序列、建筑升级路线、新功能/区域逐步开放）是否设计得平滑且能持续带来成就感？
-                            <div class="example-text"><em>例如：科技树分支清晰，玩家每次解锁新科技都能带来生产效率提升或新的玩法，避免出现长期无目标可达的“空窗期”。</em></div>
+                        <td><span class="evaluation-question-title">成长路径（如等级提升、技能树解锁、科技研发序列、建筑升级路线、新功能/区域逐步开放）是否设计得平滑且能持续带来成就感？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">科技树分支清晰，玩家每次解锁新科技都能带来生产效率提升或新的玩法，避免出现长期无目标可达的“空窗期”。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="成长路径设计良好，但中期部分节点可能存在瓶颈。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="成长路径设计良好，但中期部分节点可能存在瓶颈。" aria-label="成长路径设计说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="成长路径设计评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>目标设置是否能有效引导玩家探索游戏内容、掌握核心机制，并自然地延长其游戏生命周期？
-                            <div class="example-text"><em>例如：通过主线任务引导玩家逐步了解核心系统，通过支线任务和赛季目标鼓励玩家探索支线玩法。</em></div>
+                        <td><span class="evaluation-question-title">目标设置是否能有效引导玩家探索游戏内容、掌握核心机制，并自然地延长其游戏生命周期？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">通过主线任务引导玩家逐步了解核心系统，通过支线任务和赛季目标鼓励玩家探索支线玩法。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="引导机制明确，能有效驱动玩家进行内容探索。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="引导机制明确，能有效驱动玩家进行内容探索。" aria-label="目标引导延长生命周期说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="目标引导延长生命周期评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     <tr>
-                        <td>是否存在“目标真空期”或“成长瓶颈期”可能导致用户流失？
-                            <div class="example-text"><em>例如：当玩家达到一定等级后，内容消耗速度是否会突然加快，导致无事可做？</em></div>
+                        <td><span class="evaluation-question-title">是否存在“目标真空期”或“成长瓶颈期”可能导致用户流失？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">当玩家达到一定等级后，内容消耗速度是否会突然加快，导致无事可做？</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="后期内容消耗速率需精确预估，避免出现目标真空。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="后期内容消耗速率需精确预估，避免出现目标真空。" aria-label="目标真空期避免说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="目标真空期避免评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">DIY与个性化表达空间</td>
-                        <td>游戏是否提供了足够的自定义选项和工具，让玩家能够充分发挥创造力，打造出符合自己审美和策略偏好的个性化内容？
-                            <div class="example-text"><em>例如：提供自定义颜色调色板、可编辑的建筑立面、玩家自己设计并上传的壁纸/地砖、可组合的模块化家具系统、自由的道路和区域规划工具。</em></div>
+                        <td><span class="evaluation-question-title">游戏是否提供了足够的自定义选项和工具，让玩家能够充分发挥创造力，打造出符合自己审美和策略偏好的个性化内容？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">提供自定义颜色调色板、可编辑的建筑立面、玩家自己设计并上传的壁纸/地砖、可组合的模块化家具系统、自由的道路和区域规划工具。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="自定义系统设计已初步完成，但模块丰富度仍需扩展。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="自定义系统设计已初步完成，但模块丰富度仍需扩展。" aria-label="自定义选项与工具说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="自定义选项与工具评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>美术负责人、技术负责人</td>
                     </tr>
                     <tr>
-                        <td>玩家的创造物是否具有展示价值（如截图分享、好友参观）和分享动力，从而促进游戏的社交传播和用户生成内容（UGC）生态的形成？
-                            <div class="example-text"><em>例如：玩家可分享自己的城市设计蓝图、农场布局截图，或邀请好友参观自己的专属园区，形成社区分享氛围。</em></div>
+                        <td><span class="evaluation-question-title">玩家的创造物是否具有展示价值（如截图分享、好友参观）和分享动力，从而促进游戏的社交传播和用户生成内容（UGC）生态的形成？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">玩家可分享自己的城市设计蓝图、农场布局截图，或邀请好友参观自己的专属园区，形成社区分享氛围。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已规划社交分享功能，UGC激励机制需进一步细化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已规划社交分享功能，UGC激励机制需进一步细化。" aria-label="创造物展示与分享动力说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="创造物展示与分享动力评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>市场/运营负责人</td>
                     </tr>
                     <tr>
-                        <td>DIY系统的易用性和深度是否平衡？新手能否快速上手，高手是否有足够的空间施展？玩家的创造物对游戏进程是否有实际影响，还是仅仅是外观改变？
-                            <div class="example-text"><em>例如：新手可以一键部署推荐布局，高手可以自由组合上千种装饰物；玩家对生产线的优化布局能直接影响生产效率和收益。</em></div>
+                        <td><span class="evaluation-question-title">DIY系统的易用性和深度是否平衡？新手能否快速上手，高手是否有足够的空间施展？玩家的创造物对游戏进程是否有实际影响，还是仅仅是外观改变？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">新手可以一键部署推荐布局，高手可以自由组合上千种装饰物；玩家对生产线的优化布局能直接影响生产效率和收益。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="易用性测试通过，但深度玩家的施展空间有待提升。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="易用性测试通过，但深度玩家的施展空间有待提升。" aria-label="DIY系统易用性与深度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="DIY系统易用性与深度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>技术负责人、美术负责人</td>
                     </tr>
                 </tbody>
             </table>
@@ -1018,76 +1159,96 @@
                         <th>评估要点 (Evaluation Points) 及举例说明</th>
                         <th>说明</th>
                         <th>评估结果</th>
+                        <th>主要负责人</th>
+                        <th>次要负责人</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td rowspan="3">商业模式选择与适配性</td>
-                        <td>团队计划采用哪种主要的商业模式？以及它与游戏核心玩法、目标用户、发行平台政策的适配性如何？
-                            <div class="example-text"><em>例如：移动端主要采用F2P+IAP模式，PC/主机则考虑买断制+DLC。</em></div>
+                        <td><span class="evaluation-question-title">团队计划采用哪种主要的商业模式？以及它与游戏核心玩法、目标用户、发行平台政策的适配性如何？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">移动端主要采用F2P+IAP模式，PC/主机则考虑买断制+DLC。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已确定F2P+IAP模式，与目标用户付费习惯匹配。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已确定F2P+IAP模式，与目标用户付费习惯匹配。" aria-label="商业模式选择与适配性说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="商业模式选择与适配性评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>制作人/商务负责人</td>
+                        <td>游戏策划、市场/运营负责人</td>
                     </tr>
                     <tr>
-                        <td>所选模式是否与游戏的核心循环节奏、模拟深度、目标用户的付费习惯与预期、以及发行平台政策高度匹配？
-                            <div class="example-text"><em>例如：针对移动端休闲玩家，选择F2P+IAP，通过售卖限定装饰、加速卡和高级建筑图纸盈利，而非强制性的体力限制，确保与休闲节奏匹配。</em></div>
+                        <td><span class="evaluation-question-title">所选模式是否与游戏的核心循环节奏、模拟深度、目标用户的付费习惯与预期、以及发行平台政策高度匹配？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">针对移动端休闲玩家，选择F2P+IAP，通过售卖限定装饰、加速卡和高级建筑图纸盈利，而非强制性的体力限制，确保与休闲节奏匹配。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="模式与核心玩法适配性较好，但需关注平台政策变化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="模式与核心玩法适配性较好，但需关注平台政策变化。" aria-label="商业模式匹配度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="商业模式匹配度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>制作人/商务负责人</td>
+                        <td>游戏策划、数值策划</td>
                     </tr>
                     <tr>
-                        <td>分析同类型、同平台、同目标用户的成功竞品采用了何种商业模式，其付费点设计和ARPU/ARPPU表现如何？所选商业模式能否最大化盈利潜力，同时不损害核心用户体验和口碑？
-                            <div class="example-text"><em>例如：参考《梦想家园》在休闲模拟领域的付费点设计，以及《都市天际线》的DLC扩展模式，评估其收益模型。付费内容以装饰性、便利性为主，避免形成“付费墙”或“逼氪”感。</em></div>
+                        <td><span class="evaluation-question-title">分析同类型、同平台、同目标用户的成功竞品采用了何种商业模式，其付费点设计和ARPU/ARPPU表现如何？所选商业模式能否最大化盈利潜力，同时不损害核心用户体验和口碑？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">参考《梦想家园》在休闲模拟领域的付费点设计，以及《都市天际线》的DLC扩展模式，评估其收益模型。付费内容以装饰性、便利性为主，避免形成“付费墙”或“逼氪”感。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已完成竞品商业模式分析，致力于‘价值交换’而非‘逼氪’。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已完成竞品商业模式分析，致力于‘价值交换’而非‘逼氪’。" aria-label="竞品商业模式分析与盈利潜力说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="竞品商业模式分析与盈利潜力评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>制作人/商务负责人</td>
+                        <td>市场/运营负责人、数值策划</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">付费点设计与用户体验平衡</td>
-                        <td>若采用F2P或含内购模式，付费点（如购买稀缺资源、加速、解锁高级功能/建筑/装饰、特殊角色/道具、跳过等待时间等）设计是否克制，且不破坏核心游戏体验的公平性？
-                            <div class="example-text"><em>例如：付费加速功能，但游戏内也会提供其他免费获取加速道具的途径（如通过完成挑战任务）；高级装饰物付费获取，但核心功能建筑无需付费。</em></div>
+                        <td><span class="evaluation-question-title">若采用F2P或含内购模式，付费点（如购买稀缺资源、加速、解锁高级功能/建筑/装饰、特殊角色/道具、跳过等待时间等）设计是否克制，且不破坏核心游戏体验的公平性？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">付费加速功能，但游戏内也会提供其他免费获取加速道具的途径（如通过完成挑战任务）；高级装饰物付费获取，但核心功能建筑无需付费。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="付费点设计已遵循不破坏公平性原则，主要集中在装饰和便利性。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="付费点设计已遵循不破坏公平性原则，主要集中在装饰和便利性。" aria-label="付费点设计克制性说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="付费点设计克制性评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划、制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>尽量做到“付费省时/提供个性化选择/获取额外便利”，但“不付费也能完整体验核心内容并取得进展”。付费设计是否会制造“付费墙”或强迫感，从而导致非付费用户的流失？
-                            <div class="example-text"><em>例如：非付费玩家可以通过付出更多时间和精力达到相同目标，只是速度慢一些。避免强制观看广告或无限制的体力消耗，导致玩家无法正常进行游戏。</em></div>
+                        <td><span class="evaluation-question-title">尽量做到“付费省时/提供个性化选择/获取额外便利”，但“不付费也能完整体验核心内容并取得进展”。付费设计是否会制造“付费墙”或强迫感，从而导致非付费用户的流失？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">非付费玩家可以通过付出更多时间和精力达到相同目标，只是速度慢一些。避免强制观看广告或无限制的体力消耗，导致玩家无法正常进行游戏。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已确保非付费玩家的完整体验，避免潜在的付费墙。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已确保非付费玩家的完整体验，避免潜在的付费墙。" aria-label="付费墙与用户体验说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="付费墙与用户体验评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>数值策划、制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>付费点的定价策略、付费深度（单用户可投入金额上限）以及各付费点之间的关联性，是否经过仔细推敲和严格的数值平衡？付费内容对游戏内经济系统、数值平衡、玩家间公平性的潜在影响是什么？是否有机制来缓解这些影响？
-                            <div class="example-text"><em>例如：确保付费道具不会对游戏内经济造成通货膨胀，或让非付费玩家感到资源获取异常困难。</em></div>
+                        <td><span class="evaluation-question-title">付费点的定价策略、付费深度（单用户可投入金额上限）以及各付费点之间的关联性，是否经过仔细推敲和严格的数值平衡？付费内容对游戏内经济系统、数值平衡、玩家间公平性的潜在影响是什么？是否有机制来缓解这些影响？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">确保付费道具不会对游戏内经济造成通货膨胀，或让非付费玩家感到资源获取异常困难。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="数值平衡仍在进行中，特别是对付费道具对经济系统的影响。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="数值平衡仍在进行中，特别是对付费道具对经济系统的影响。" aria-label="付费定价与数值平衡说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="付费定价与数值平衡评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>数值策划</td>
+                        <td>游戏策划、制作人/商务负责人</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">长线运营与内容更新规划 (Live Ops)</td>
-                        <td>模拟经营游戏，尤其是服务型游戏 (Games as a Service - GaaS)，其生命力很大程度上依赖于持续的内容更新和运营活动。团队是否有明确的Live Ops计划？计划通过定期推出新内容（如新的建筑类型、产业链条、模拟系统、区域地图、剧情章节）、限时活动（节日主题、特殊挑战赛）、赛季更新等方式，来保持游戏新鲜感、延长用户生命周期并刺激持续付费。
-                            <div class="example-text"><em>例如：每季度推出一个大型主题更新，包含新工业线、新科研方向和相关剧情任务；每月进行小型节日活动，提供限定装饰和挑战任务。</em></div>
+                        <td><span class="evaluation-question-title">模拟经营游戏，尤其是服务型游戏 (Games as a Service - GaaS)，其生命力很大程度上依赖于持续的内容更新和运营活动。团队是否有明确的Live Ops计划？计划通过定期推出新内容（如新的建筑类型、产业链条、模拟系统、区域地图、剧情章节）、限时活动（节日主题、特殊挑战赛）、赛季更新等方式，来保持游戏新鲜感、延长用户生命周期并刺激持续付费。</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">每季度推出一个大型主题更新，包含新工业线、新科研方向和相关剧情任务；每月进行小型节日活动，提供限定装饰和挑战任务。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="初步的Live Ops计划已制定，但内容细节仍在规划中。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="初步的Live Ops计划已制定，但内容细节仍在规划中。" aria-label="Live Ops计划说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="Live Ops计划评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划、制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>内容生产的速度、质量和成本是否具有可持续性？需特别注意模拟经营游戏普遍存在内容消耗速度快的问题，需提前规划内容迭代的节奏和体量。Live Ops计划是否与核心玩法和商业模式紧密结合？是否有机制能够让老玩家在体验新内容的同时，新玩家也能顺利融入？
-                            <div class="example-text"><em>例如：模拟经营玩家对内容消耗快，需评估美术和策划团队在后期是否能支撑高频率、高质量的内容产出，或是否需要引入AIGC辅助生产。新内容发布时，确保新玩家有清晰的引导路径，老玩家有足够的新鲜感和挑战。</em></div>
+                        <td><span class="evaluation-question-title">内容生产的速度、质量和成本是否具有可持续性？需特别注意模拟经营游戏普遍存在内容消耗速度快的问题，需提前规划内容迭代的节奏和体量。Live Ops计划是否与核心玩法和商业模式紧密结合？是否有机制能够让老玩家在体验新内容的同时，新玩家也能顺利融入？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">模拟经营玩家对内容消耗快，需评估美术和策划团队在后期是否能支撑高频率、高质量的内容产出，或是否需要引入AIGC辅助生产。新内容发布时，确保新玩家有清晰的引导路径，老玩家有足够的新鲜感和挑战。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="内容迭代节奏已确定，但内容生产能力需要依靠AIGC辅助。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="内容迭代节奏已确定，但内容生产能力需要依靠AIGC辅助。" aria-label="内容生产可持续性说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="内容生产可持续性评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>游戏策划</td>
+                        <td>技术负责人、美术负责人、制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>团队是否有足够的人力和资源来支持高频率、高质量的内容更新？能否利用UGC或程序化生成（如AIGC）来辅助内容生产？
-                            <div class="example-text"><em>例如：考虑开放部分DIY功能，鼓励UGC内容，降低官方内容生产压力；或探索AIGC在生成任务、NPC对话方面的应用。</em></div>
+                        <td><span class="evaluation-question-title">团队是否有足够的人力和资源来支持高频率、高质量的内容更新？能否利用UGC或程序化生成（如AIGC）来辅助内容生产？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">考虑开放部分DIY功能，鼓励UGC内容，降低官方内容生产压力；或探索AIGC在生成任务、NPC对话方面的应用。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="UGC和AIGC将是未来内容生产的重要补充。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="UGC和AIGC将是未来内容生产的重要补充。" aria-label="人力与资源支持Live Ops说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="人力与资源支持Live Ops评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>技术负责人、游戏策划、美术负责人</td>
                     </tr>
                 </tbody>
             </table>
@@ -1103,69 +1264,87 @@
                         <th>评估要点 (Evaluation Points) 及举例说明</th>
                         <th>说明</th>
                         <th>评估结果</th>
+                        <th>主要负责人</th>
+                        <th>次要负责人</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td rowspan="2">技术选型与实现难度评估</td>
-                        <td>团队计划选择的游戏引擎、后端架构方案、数据库类型等核心技术栈，是否能够充分满足项目对性能、稳定性、画面表现、跨平台能力以及未来扩展性的要求？
-                            <div class="example-text"><em>例如：选择Unity引擎以支持多平台发布，后端采用云服务架构以保证弹性伸缩；针对大规模同屏单位的渲染，已预研LOD和合批技术。</em></div>
+                        <td><span class="evaluation-question-title">团队计划选择的游戏引擎、后端架构方案、数据库类型等核心技术栈，是否能够充分满足项目对性能、稳定性、画面表现、跨平台能力以及未来扩展性的要求？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">选择Unity引擎以支持多平台发布，后端采用云服务架构以保证弹性伸缩；针对大规模同屏单位的渲染，已预研LOD和合批技术。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="技术栈已初步确定，满足大部分需求，但未来扩展性需持续评估。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="技术栈已初步确定，满足大部分需求，但未来扩展性需持续评估。" aria-label="技术选型说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="技术选型评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>技术负责人</td>
+                        <td>项目经理、美术负责人</td>
                     </tr>
                     <tr>
-                        <td>核心玩法中涉及的特色系统（如大规模同屏单位、复杂AI行为模拟、精密的物理模拟、多人在线交互、AIGC集成等）的技术实现难度有多大？现有技术储备是否足够？是否存在关键技术瓶颈需要攻克？是否已进行预研或原型验证？
-                            <div class="example-text"><em>例如：需评估同时管理5000+市民的AI寻路和行为模拟对服务器的压力；大规模建筑群的渲染优化方案；AIGC生成内容的稳定性与合规性挑战。团队在多人在线模拟游戏方面缺乏经验，需要预留时间进行技术攻关或寻求外部技术支持。</em></div>
+                        <td><span class="evaluation-question-title">核心玩法中涉及的特色系统（如大规模同屏单位、复杂AI行为模拟、精密的物理模拟、多人在线交互、AIGC集成等）的技术实现难度有多大？现有技术储备是否足够？是否存在关键技术瓶颈需要攻克？是否已进行预研或原型验证？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">需评估同时管理5000+市民的AI寻路和行为模拟对服务器的压力；大规模建筑群的渲染优化方案；AIGC生成内容的稳定性与合规性挑战。团队在多人在线模拟游戏方面缺乏经验，需要预留时间进行技术攻关或寻求外部技术支持。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="大规模AI模拟存在技术瓶颈，已启动预研项目。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="大规模AI模拟存在技术瓶颈，已启动预研项目。" aria-label="技术实现难度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="技术实现难度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>技术负责人</td>
+                        <td>项目经理、游戏策划</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">团队核心能力与经验匹配度</td>
-                        <td>当前团队（包括策划、程序、美术、音效、QA、项目管理等关键角色），尤其是核心成员，是否具备开发同类型或近似复杂度模拟经营游戏的成功经验或相关技能积累？
-                            <div class="example-text"><em>例如：核心策划团队曾成功主导过一款休闲模拟手游，但在硬核经济系统设计方面经验不足；美术团队对日式Q版风格掌握不足，需考虑外包或招聘。</em></div>
+                        <td><span class="evaluation-question-title">当前团队（包括策划、程序、美术、音效、质量保证负责人、项目管理等关键角色），尤其是核心成员，是否具备开发同类型或近似复杂度模拟经营游戏的成功经验或相关技能积累？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">核心策划团队曾成功主导过一款休闲模拟手游，但在硬核经济系统设计方面经验不足；美术团队对日式Q版风格掌握不足，需考虑外包或招聘。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="团队在模拟经营经验丰富，但在特定题材美术风格上需补足。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="团队在模拟经营经验丰富，但在特定题材美术风格上需补足。" aria-label="团队能力与经验匹配度说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="团队能力与经验匹配度评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>技术负责人、游戏策划、美术负责人</td>
                     </tr>
                     <tr>
-                        <td>团队在模拟经营游戏的关键领域（如系统设计、数值平衡、经济模型构建、AI逻辑、长线留存设计）是否存在明显短板？如何弥补？
-                            <div class="example-text"><em>例如：计划邀请一位有大型模拟游戏数值经验的专家作为顾问。</em></div>
+                        <td><span class="evaluation-question-title">团队在模拟经营游戏的关键领域（如系统设计、数值平衡、经济模型构建、AI逻辑、长线留存设计）是否存在明显短板？如何弥补？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">计划邀请一位有大型模拟游戏数值经验的专家作为顾问。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="数值平衡是团队短板，已联系外部专家咨询。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="数值平衡是团队短板，已联系外部专家咨询。" aria-label="团队短板弥补说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="团队短板弥补评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>技术负责人、游戏策划、美术负责人</td>
                     </tr>
                     <tr>
-                        <td>团队的磨合程度、沟通效率、决策机制、执行力是否能够支持项目的顺利推进？
-                            <div class="example-text"><em>例如：团队成员合作超过两年，磨合良好，但需要改进跨部门沟通效率。</em></div>
+                        <td><span class="evaluation-question-title">团队的磨合程度、沟通效率、决策机制、执行力是否能够支持项目的顺利推进？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">团队成员合作超过两年，磨合良好，但需要改进跨部门沟通效率。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="团队协作高效，但跨部门沟通流程有待优化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="团队协作高效，但跨部门沟通流程有待优化。" aria-label="团队磨合与效率说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="团队磨合与效率评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td></td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">研发周期、成本预估与资源保障</td>
-                        <td>项目从立项到最终上线的完整研发周期和关键里程碑规划是否现实？
-                            <div class="example-text"><em>例如：原型验证2个月，Alpha版6个月，Beta版3个月，上线准备2个月，总计13个月。</em></div>
+                        <td><span class="evaluation-question-title">项目从立项到最终上线的完整研发周期和关键里程碑规划是否现实？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">原型验证2个月，Alpha版6个月，Beta版3个月，上线准备2个月，总计13个月。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="研发周期规划合理，但需考虑潜在延期风险。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="研发周期规划合理，但需考虑潜在延期风险。" aria-label="研发周期规划说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="研发周期规划评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>技术负责人、游戏策划</td>
                     </tr>
                     <tr>
-                        <td>所需各项支出（人力成本、设备采购与维护、软件授权、外包费用、市场推广预算、办公场地等）是否经过详细测算和合理预估？
-                            <div class="example-text"><em>例如：根据团队规模（20人），平均人力成本每人月薪X元，外包美术资产Y元，服务器及运维Z元，市场推广预算A元，总预算B元。</em></div>
+                        <td><span class="evaluation-question-title">所需各项支出（人力成本、设备采购与维护、软件授权、外包费用、市场推广预算、办公场地等）是否经过详细测算和合理预估？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">根据团队规模（20人），平均人力成本每人月薪X元，外包美术资产Y元，服务器及运维Z元，市场推广预算A元，总预算B元。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="成本预算已完成，但外包费用可能存在浮动。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="成本预算已完成，但外包费用可能存在浮动。" aria-label="成本预估说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="成本预估评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>制作人/商务负责人</td>
+                        <td>项目经理</td>
                     </tr>
                     <tr>
-                        <td>是否有足够的资金（自有资金、投资、预付款等）支持完成整个研发过程，并能应对一定程度的延期或突发状况导致的成本增加？资金到位时间和使用计划是否明确？
-                            <div class="example-text"><em>例如：现有资金可支撑8个月研发，需在第6个月完成A轮融资，并预留15%的突发缓冲资金。</em></div>
+                        <td><span class="evaluation-question-title">是否有足够的资金（自有资金、投资、预付款等）支持完成整个研发过程，并能应对一定程度的延期或突发状况导致的成本增加？资金到位时间和使用计划是否明确？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">现有资金可支撑8个月研发，需在第6个月完成A轮融资，并预留15%的突发缓冲资金。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已启动A轮融资，预计在6个月内完成，确保资金链不断裂。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已启动A轮融资，预计在6个月内完成，确保资金链不断裂。" aria-label="资金保障说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="资金保障评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>制作人/商务负责人</td>
+                        <td>项目经理</td>
                     </tr>
                 </tbody>
             </table>
@@ -1181,92 +1360,116 @@
                         <th>评估要点 (Evaluation Points) 及举例说明</th>
                         <th>说明</th>
                         <th>评估结果</th>
+                        <th>主要负责人</th>
+                        <th>次要负责人</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td rowspan="3">市场营销目标与定位</td>
-                        <td>您的市场营销目标是什么（如品牌知名度、用户下载量、首发销量、用户转化率等）？
-                            <div class="example-text"><em>例如：目标是首月下载量突破100万，品牌关键词搜索量提升50%。</em></div>
+                        <td><span class="evaluation-question-title">您的市场营销目标是什么（如品牌知名度、用户下载量、首发销量、用户转化率等）？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">目标是首月下载量突破100万，品牌关键词搜索量提升50%。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="营销目标已量化，但具体执行方案仍在细化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="营销目标已量化，但具体执行方案仍在细化。" aria-label="市场营销目标说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="市场营销目标评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>您的产品在营销中的核心卖点（Marketing Hook）是什么？它如何与产品USP协同？
-                            <div class="example-text"><em>例如：营销核心卖点是'AIGC驱动的无限可能城镇，每个NPC都有自己的故事'，与产品USP'深度NPC情感模拟'协同。</em></div>
+                        <td><span class="evaluation-question-title">您的产品在营销中的核心卖点（Marketing Hook）是什么？它如何与产品USP协同？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">营销核心卖点是'AIGC驱动的无限可能城镇，每个NPC都有自己的故事'，与产品USP'深度NPC情感模拟'协同。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="营销卖点与USP高度一致，传播清晰。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="营销卖点与USP高度一致，传播清晰。" aria-label="营销核心卖点说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="营销核心卖点评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划</td>
                     </tr>
                     <tr>
-                        <td>是否考虑了目标用户的媒体习惯和信息获取渠道？
-                            <div class="example-text"><em>例如：针对年轻女性用户，重点投放抖音、B站、小红书等平台。</em></div>
+                        <td><span class="evaluation-question-title">是否考虑了目标用户的媒体习惯和信息获取渠道？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">针对年轻女性用户，重点投放抖音、B站、小红书等平台。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已针对目标用户媒体习惯制定多渠道投放策略。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已针对目标用户媒体习惯制定多渠道投放策略。" aria-label="目标用户媒体习惯说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="目标用户媒体习惯评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td></td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">用户获取渠道与预算分配</td>
-                        <td>计划通过哪些渠道获取用户（如线上广告、社区运营、KOL/KOC合作、媒体评测、应用商店推荐、线下活动等）？
-                            <div class="example-text"><em>例如：头部KOL宣发（B站、抖音）、TapTap预热活动、Steam新品节参与、海外Facebook/Google Ads投放。</em></div>
+                        <td><span class="evaluation-question-title">计划通过哪些渠道获取用户（如线上广告、社区运营、KOL/KOC合作、媒体评测、应用商店推荐、线下活动等）？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">头部KOL宣发（B站、抖音）、TapTap预热活动、Steam新品节参与、海外Facebook/Google Ads投放。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已确定核心用户获取渠道，包括KOL和平台合作。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已确定核心用户获取渠道，包括KOL和平台合作。" aria-label="用户获取渠道说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="用户获取渠道评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>不同渠道的预期效果和用户获取成本（CAC）预估是否合理？
-                            <div class="example-text"><em>例如：根据竞品数据，预估KOL合作CAC为X元/下载，广告投放CAC为Y元/下载。</em></div>
+                        <td><span class="evaluation-question-title">不同渠道的预期效果和用户获取成本（CAC）预估是否合理？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">根据竞品数据，预估KOL合作CAC为X元/下载，广告投放CAC为Y元/下载。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="CAC预估基于历史数据，但仍需实测验证。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="CAC预估基于历史数据，但仍需实测验证。" aria-label="用户获取成本预估说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="用户获取成本预估评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                     <tr>
-                        <td>是否有明确的预算分配计划？渠道组合能否覆盖目标用户群体？
-                            <div class="example-text"><em>例如：KOL/KOC宣发占比30%，线上广告投放40%，社区运营20%，应用商店首发推荐10%。</em></div>
+                        <td><span class="evaluation-question-title">是否有明确的预算分配计划？渠道组合能否覆盖目标用户群体？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">KOL/KOC宣发占比30%，线上广告投放40%，社区运营20%，应用商店首发推荐10%。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="预算分配已定，但可根据效果动态调整。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="预算分配已定，但可根据效果动态调整。" aria-label="预算分配计划说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="预算分配计划评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="3">品牌建设与社区运营</td>
-                        <td>如何构建和传播游戏品牌形象？品牌故事和传播点是否具有吸引力？
-                            <div class="example-text"><em>例如：通过发布开发者日志、设定游戏世界观漫画、举办玩家建筑设计大赛等，建立游戏‘温馨治愈’的品牌形象。</em></div>
+                        <td><span class="evaluation-question-title">如何构建和传播游戏品牌形象？品牌故事和传播点是否具有吸引力？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">通过发布开发者日志、设定游戏世界观漫画、举办玩家建筑设计大赛等，建立游戏‘温馨治愈’的品牌形象。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="品牌故事已明确，传播点具备吸引力。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="品牌故事已明确，传播点具备吸引力。" aria-label="品牌形象构建与传播说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="品牌形象构建与传播评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划</td>
                     </tr>
                     <tr>
-                        <td>是否有上线前、上线后持续的社区运营计划，以维系用户活跃度、收集反馈并形成良性互动？
-                            <div class="example-text"><em>例如：在Discord、微博、贴吧等平台建立官方社区，每日回复，每周举办问答、晒图活动，每月进行开发者直播。</em></div>
+                        <td><span class="evaluation-question-title">是否有上线前、上线后持续的社区运营计划，以维系用户活跃度、收集反馈并形成良性互动？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">在Discord、微博、贴吧等平台建立官方社区，每日回复，每周举办问答、晒图活动，每月进行开发者直播。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="社区运营计划已详细制定，有专人负责。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="社区运营计划已详细制定，有专人负责。" aria-label="社区运营计划说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="社区运营计划评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td></td>
                     </tr>
                     <tr>
-                        <td>社区运营计划是否具备可执行性，并能有效转化为用户粘性？
-                            <div class="example-text"><em>例如：配备专职社区经理，制定详细的社区活动日历和内容发布计划。</em></div>
+                        <td><span class="evaluation-question-title">社区运营计划是否具备可执行性，并能有效转化为用户粘性？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">配备专职社区经理，制定详细的社区活动日历和内容发布计划。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="计划具有高度可执行性，预期能有效提升用户粘性。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="计划具有高度可执行性，预期能有效提升用户粘性。" aria-label="社区运营可执行性说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="社区运营可执行性评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>项目经理</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="2">宣发节奏与内容规划</td>
-                        <td>游戏宣发时间轴规划如何？在不同阶段（如概念公布、测试招募、预热、上线、长线运营）将推出哪些宣传内容（如预告片、实机演示、开发者日志、玩家活动等）？
-                            <div class="example-text"><em>例如：测试招募期发布概念预告片；Beta测试前发布实机演示视频、开发者访谈；上线前发布最终宣传片、知名UP主试玩内容，上线后进行版本更新内容预告。</em></div>
+                        <td><span class="evaluation-question-title">游戏宣发时间轴规划如何？在不同阶段（如概念公布、测试招募、预热、上线、长线运营）将推出哪些宣传内容（如预告片、实机演示、开发者日志、玩家活动等）？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">测试招募期发布概念预告片；Beta测试前发布实机演示视频、开发者访谈；上线前发布最终宣传片、知名UP主试玩内容，上线后进行版本更新内容预告。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="宣发时间轴已明确，内容规划正在制作中。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="宣发时间轴已明确，内容规划正在制作中。" aria-label="宣发时间轴与内容规划说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="宣发时间轴与内容规划评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>游戏策划</td>
                     </tr>
                     <tr>
-                        <td>宣发节奏是否合理？内容是否能持续吸引关注？是否有应对突发情况的宣发预案？
-                            <div class="example-text"><em>例如：预留应对负面舆情或竞品突袭的宣发调整空间。</em></div>
+                        <td><span class="evaluation-question-title">宣发节奏是否合理？内容是否能持续吸引关注？是否有应对突发情况的宣发预案？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">预留应对负面舆情或竞品突袭的宣发调整空间。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="宣发节奏合理，并预留了应急方案。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="宣发节奏合理，并预留了应急方案。" aria-label="宣发节奏与预案说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="宣发节奏与预案评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>市场/运营负责人</td>
+                        <td>项目经理</td>
                     </tr>
                 </tbody>
             </table>
@@ -1282,71 +1485,89 @@
                         <th>评估要点 (Evaluation Points) 及举例说明</th>
                         <th>说明</th>
                         <th>评估结果</th>
+                        <th>主要负责人</th>
+                        <th>次要负责人</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td rowspan="2">系统性风险识别</td>
-                        <td>是否已全面识别可能对项目产生高影响或高概率发生的市场、产品、技术、团队、资金等各类风险？
-                            <div class="example-text"><em>例如：市场风险：版号获取不确定性；产品风险：核心玩法数值崩溃；技术风险：多人模式服务器架构无法承载高并发；团队风险：核心主程离职；资金风险：A轮融资失败。</em></div>
+                        <td><span class="evaluation-question-title">是否已全面识别可能对项目产生高影响或高概率发生的市场、产品、技术、团队、资金等各类风险？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">市场风险：版号获取不确定性；产品风险：核心玩法数值崩溃；技术风险：多人模式服务器架构无法承载高并发；团队风险：核心主程离职；资金风险：A轮融资失败。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已完成全面风险识别，形成风险清单。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已完成全面风险识别，形成风险清单。" aria-label="系统性风险识别说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="系统性风险识别评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>制作人/商务负责人、技术负责人、游戏策划、市场/运营负责人</td>
                     </tr>
                     <tr>
-                        <td>是否已对各项风险进行发生概率和影响程度评估（如高/中/低，或1-5分），并确定优先级？
-                            <div class="example-text"><em>例如：将“核心主程离职”评估为高概率、高影响风险，而“UI配色不被所有玩家接受”评估为低概率、低影响风险。</em></div>
+                        <td><span class="evaluation-question-title">是否已对各项风险进行发生概率和影响程度评估（如高/中/低，或1-5分），并确定优先级？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">将“核心主程离职”评估为高概率、高影响风险，而“UI配色不被所有玩家接受”评估为低概率、低影响风险。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已对风险进行优先级排序，聚焦高危风险。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已对风险进行优先级排序，聚焦高危风险。" aria-label="风险概率与影响评估说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="风险概率与影响评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td></td>
                     </tr>
                     
                     <tr>
                         <td rowspan="2">应对策略制定</td>
-                        <td>是否已针对高优先级风险制定具体的规避、缓解或应急措施（Plan B）？
-                            <div class="example-text"><em>例如：若核心玩法数据不佳（次日留存低于X%），则启动备选玩法方案B（将纯PVE改为轻PVP）；若关键主程离职，立即启动内部培养的副手接替或紧急招聘外部人才。</em></div>
+                        <td><span class="evaluation-question-title">是否已针对高优先级风险制定具体的规避、缓解或应急措施（Plan B）？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">若核心玩法数据不佳（次日留存低于X%），则启动备选玩法方案B（将纯PVE改为轻PVP）；若关键主程离职，立即启动内部培养的副手接替或紧急招聘外部人才。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="高优先级风险已制定详细的应对策略。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="高优先级风险已制定详细的应对策略。" aria-label="风险应对策略制定说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="风险应对策略制定评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>技术负责人、游戏策划、制作人/商务负责人、市场/运营负责人</td>
                     </tr>
                     <tr>
-                        <td>项目负责人是否明确了风险监控的责任人，以及触发应对机制的具体条件？
-                            <div class="example-text"><em>例如：策划总监负责产品风险监控，一旦用户流失率超过预警值，立即启动用户调研和玩法调整预案。</em></div>
+                        <td><span class="evaluation-question-title">项目负责人是否明确了风险监控的责任人，以及触发应对机制的具体条件？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">策划总监负责产品风险监控，一旦用户流失率超过预警值，立即启动用户调研和玩法调整预案。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="风险责任人明确，触发条件有待细化。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="风险责任人明确，触发条件有待细化。" aria-label="风险监控责任人说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="风险监控责任人评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td></td>
                     </tr>
                     
                     <tr>
                         <td rowspan="2">风险监控与缓冲</td>
-                        <td>是否建立了定期的风险审查会议、关键指标（KPI）预警系统等动态监控机制？
-                            <div class="example-text"><em>例如：每周项目例会增设风险复盘环节，每月对关键KPI（如用户调研满意度、原型测试留存率）进行复盘，低于预警值触发预案。</em></div>
+                        <td><span class="evaluation-question-title">是否建立了定期的风险审查会议、关键指标（KPI）预警系统等动态监控机制？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">每周项目例会增设风险复盘环节，每月对关键KPI（如用户调研满意度、原型测试留存率）进行复盘，低于预警值触发预案。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已建立风险监控机制，每周例会复盘。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已建立风险监控机制，每周例会复盘。" aria-label="风险监控机制说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="风险监控机制评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td></td>
                     </tr>
                     <tr>
-                        <td>是否在研发周期和预算中预留了足够的时间和资金缓冲（Contingency Buffer），以应对未预见的困难或风险事件？
-                            <div class="example-text"><em>例如：在原定研发周期基础上预留1-2个月时间，预算上额外拨出15%-20%作为应急资金。</em></div>
+                        <td><span class="evaluation-question-title">是否在研发周期和预算中预留了足够的时间和资金缓冲（Contingency Buffer），以应对未预见的困难或风险事件？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">在原定研发周期基础上预留1-2个月时间，预算上额外拨出15%-20%作为应急资金。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="已预留15%的资金缓冲，时间缓冲有待增加。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="已预留15%的资金缓冲，时间缓冲有待增加。" aria-label="研发周期与预算缓冲说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="研发周期与预算缓冲评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                     
                     <tr>
                         <td rowspan="2">风险沟通透明度</td>
-                        <td>团队内部如何有效沟通风险信息？
-                            <div class="example-text"><em>例如：团队内部设置风险墙，每日更新；项目管理工具中设立风险模块，定期同步。</em></div>
+                        <td><span class="evaluation-question-title">团队内部如何有效沟通风险信息？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">团队内部设置风险墙，每日更新；项目管理工具中设立风险模块，定期同步。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="团队内部通过风险墙和项目管理工具实时同步风险。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="团队内部通过风险墙和项目管理工具实时同步风险。" aria-label="团队内部风险沟通说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="团队内部风险沟通评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td></td>
                     </tr>
                     <tr>
-                        <td>是否定期向关键利益相关者（如投资人、发行商）同步风险状况及应对进展，以建立信任并争取支持？
-                            <div class="example-text"><em>例如：每周向投资人/发行商提交项目周报，风险模块重点突出，并附带应对进展。</em></div>
+                        <td><span class="evaluation-question-title">是否定期向关键利益相关者（如投资人、发行商）同步风险状况及应对进展，以建立信任并争取支持？</span>
+                            <div class="example-text"><em>例如：<span style="font-weight: bold;">每周向投资人/发行商提交项目周报，风险模块重点突出，并附带应对进展。</span></em></div>
                         </td>
-                        <td><textarea class="notes-textarea" placeholder="定期向投资人同步风险报告，保持透明。"></textarea></td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td><textarea class="notes-textarea" placeholder="定期向投资人同步风险报告，保持透明。" aria-label="外部风险沟通说明"></textarea></td>
+                        <td><select class="evaluation-select" aria-label="外部风险沟通评估结果"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
+                        <td>项目经理</td>
+                        <td>制作人/商务负责人</td>
                     </tr>
                 </tbody>
             </table>
@@ -1360,7 +1581,7 @@
                     <tr>
                         <th>评估项 (Checklist Item)</th>
                         <th>方法实践</th>
-                        <!-- Removed <th>评估结果</th> as per request -->
+                        <!-- Removed 主要负责人 and 次要负责人 columns -->
                     </tr>
                 </thead>
                 <tbody>
@@ -1372,11 +1593,11 @@
                             <div class="core-method-description">
                                 <p>通过系统化的深度访谈与问卷调研，全面挖掘目标用户的游戏行为、核心动机、未满足需求及对模拟经营游戏的深层偏好，为产品概念提供坚实的用户数据支撑。</p>
                                 <ul>
-                                    <li><strong>明确研究目标：</strong> 设定具体、可衡量的研究问题，例如：了解用户对特定模拟题材的兴趣度、对现有同类游戏的不满点、对新玩法的接受度等。</li>
-                                    <li><strong>设计高质量提纲/问卷：</strong> 结合开放式问题（如“您在玩模拟经营游戏时，最享受什么？”）和封闭式问题（如“对于农场经营题材，您的感兴趣程度是：1-5分？”），确保问题中立、不具引导性。</li>
-                                    <li><strong>精准招募与激励：</strong> 通过社交媒体、游戏社区、专业调研平台等渠道，招募符合目标用户画像（年龄、游戏经验、偏好等）的参与者，并给予适当激励。</li>
-                                    <li><strong>高效执行与记录：</strong> 访谈建议采用一对一深度交流，营造轻松氛围，鼓励用户畅所欲言，并做好详尽记录（录音、笔记）。问卷则需保证样本量和回收质量。</li>
-                                    <li><strong>科学数据分析：</strong> 对访谈录音进行转录和编码，提炼关键观点和情感洞察。对问卷数据进行统计分析，挖掘规律和趋势。</li>
+                                    <li><span style="font-weight: bold;">明确研究目标：</span> 设定具体、可测量的研究问题，例如：了解用户对特定模拟题材的兴趣度、对现有同类游戏的不满点、对新玩法的接受度等。</li>
+                                    <li><span style="font-weight: bold;">设计高质量提纲/问卷：</span> 结合开放式问题（如“您在玩模拟经营游戏时，最享受什么？”）和封闭式问题（如“对于农场经营题材，您的感兴趣程度是：1-5分？”），确保问题中立、不具引导性。</li>
+                                    <li><span style="font-weight: bold;">精准招募与激励：</span> 通过社交媒体、游戏社区、专业调研平台等渠道，招募符合目标用户画像（年龄、游戏经验、偏好等）的参与者，并给予适当激励。</li>
+                                    <li><span style="font-weight: bold;">高效执行与记录：</span> 访谈建议采用一对一深度交流，营造轻松氛围，鼓励用户畅所欲言，并做好详尽记录（录音、笔记）。问卷则需保证样本量和回收质量。</li>
+                                    <li><span style="font-weight: bold;">科学数据分析：</span> 对访谈录音进行转录和编码，提炼关键观点和情感洞察。对问卷数据进行统计分析，挖掘规律和趋势。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1398,7 +1619,6 @@
                                 </ul>
                             </div>
                         </td>
-                        <!-- Removed <td><select>...</select></td> -->
                     </tr>
 
                     <tr>
@@ -1408,14 +1628,14 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 选择2-3款与自身项目定位相近或具有高度参考价值的竞品（包括成功与不那么成功的），从以下核心维度进行深度体验和系统拆解，以洞察其优势、劣势及市场表现。</p>
                                 <ul>
-                                    <li><strong>核心玩法与机制：</strong> 题材、核心循环、主要系统（如建造、生产、交易、研发、社交等）的机制、深度与策略性。</li>
-                                    <li><strong>美术风格与表现：</strong> 整体画风、UI/UX设计、角色/场景建模、动画特效、音效配乐的质量与特色。</li>
-                                    <li><strong>内容与成长体系：</strong> 游戏体量、目标引导、成长曲线、任务系统、数值体系、可解锁内容。</li>
-                                    <li><strong>商业化设计：</strong> 付费模式、付费点、虚拟货币体系、付费深度、对非付费玩家的友好度。</li>
-                                    <li><strong>新手引导与易用性：</strong> 上手难度、引导流程的清晰度、操作便捷性。</li>
-                                    <li><strong>社交与社区生态：</strong> 内置社交功能、玩家互动方式、社区氛围、官方运营活动。</li>
-                                    <li><strong>用户评价与口碑：</strong> 在各大应用商店、论坛、社交媒体上收集用户的好评与差评，重点关注高频提及的优缺点。</li>
-                                    <li><strong>市场表现数据：</strong> 下载量、收入预估、用户活跃度、媒体评分等（可借助第三方数据平台）。</li>
+                                    <li><span style="font-weight: bold;">核心玩法与机制：</span> 题材、核心循环、主要系统（如建造、生产、交易、研发、社交等）的机制、深度与策略性。</li>
+                                    <li><span style="font-weight: bold;">美术风格与表现：</span> 整体画风、UI/UX设计、角色/场景建模、动画特效、音效配乐的质量与特色。</li>
+                                    <li><span style="font-weight: bold;">内容与成长体系：</span> 游戏体量、目标引导、成长曲线、任务系统、数值体系、可解锁内容。</li>
+                                    <li><span style="font-weight: bold;">商业化设计：</span> 付费模式、付费点、虚拟货币体系、付费深度、对非付费玩家的友好度。</li>
+                                    <li><span style="font-weight: bold;">新手引导与易用性：</span> 上手难度、引导流程的清晰度、操作便捷性。</li>
+                                    <li><span style="font-weight: bold;">社交与社区生态：</span> 内置社交功能、玩家互动方式、社区氛围、官方运营活动。</li>
+                                    <li><span style="font-weight: bold;">用户评价与口碑：</span> 在各大应用商店、论坛、社交媒体上收集用户的好评与差评，重点关注高频提及的优缺点。</li>
+                                    <li><span style="font-weight: bold;">市场表现数据：</span> 下载量、收入预估、用户活跃度、媒体评分等（可借助第三方数据平台）。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1441,12 +1661,12 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 组织核心团队成员，基于对自身项目概念的理解和竞品分析结果，共同进行系统的SWOT分析，从而识别自身优势、劣势、市场机会与潜在威胁，为差异化定位提供战略指导。</p>
                                 <ul>
-                                    <li><strong>团队协作识别：</strong></li>
+                                    <li><span style="font-weight: bold;">团队协作识别：</span></li>
                                     <ul>
-                                        <li><strong>优势 (Strengths)：</strong> 团队独有的技术积累、原创创意、对特定题材的深刻理解、高效开发流程等内部积极因素。</li>
-                                        <li><strong>劣势 (Weaknesses)：</strong> 团队经验不足、资金短缺、技术选型风险、品牌知名度缺乏等内部消极因素。</li>
-                                        <li><strong>机会 (Opportunities)：</strong> 市场上未被满足的用户需求、可利用的新兴技术趋势、竞品暴露出的明显短板、潜在的合作伙伴等外部积极因素。</li>
-                                        <li><strong>威胁 (Threats)：</strong> 强大竞品已占据市场、政策法规不确定性、用户获取成本持续攀升、核心人才流失风险等外部消极因素。</li>
+                                        <li><span style="font-weight: bold;">优势 (Strengths)：</span> 团队独有的技术积累、原创创意、对特定题材的深刻理解、高效开发流程等内部积极因素。</li>
+                                        <li><span style="font-weight: bold;">劣势 (Weaknesses)：</span> 团队经验不足、资金短缺、技术选型风险、品牌知名度缺乏等内部消极因素。</li>
+                                        <li><span style="font-weight: bold;">机会 (Opportunities)：</span> 市场上未被满足的用户需求、可利用的新兴技术趋势、竞品暴露出的明显短板、潜在的合作伙伴等外部积极因素。</li>
+                                        <li><span style="font-weight: bold;">威胁 (Threats)：</span> 强大竞品已占据市场、政策法规不确定性、用户获取成本持续攀升、核心人才流失风险等外部消极因素。</li>
                                     </ul>
                                 </ul>
                             </div>
@@ -1481,7 +1701,7 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 在深入的用户研究和多维度竞品分析基础上，系统性地识别市场中的“价值洼地”与“创新切入点”，从而确立产品的独特差异化优势。</p>
                                 <ul>
-                                    <li><strong>识别途径：</strong> 通过对大量竞品的横向对比和用户反馈的纵向深挖，努力找出：</li>
+                                    <li><span style="font-weight: bold;">识别途径：</span> 通过对大量竞品的横向对比和用户反馈的纵向深挖，努力找出：</li>
                                     <ul>
                                         <li>竞品普遍存在的不足：例如，多数农场游戏缺乏深度社交，或城市建设游戏后期目标感不强。</li>
                                         <li>用户尚未被充分满足的需求：例如，玩家渴望在模拟经营中体验更真实的情感互动，或希望有更自由的沙盒创造工具。</li>
@@ -1507,7 +1727,6 @@
                                 </ul>
                             </div>
                         </td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
                     </tr>
 
                     <tr>
@@ -1538,10 +1757,10 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 秉持MVP (Minimum Viable Product，最小可行产品) 理念，在立项或立项初期，以最小成本和时间快速搭建一个能够验证核心玩法乐趣的“可玩原型”，并通过小规模用户测试进行多轮快速迭代，从而验证核心设计、暴露早期缺陷。</p>
                                 <ul>
-                                    <li><strong>原型搭建：</strong> 画面粗糙、功能不全亦可，但必须能让测试者体验到游戏最核心的1-2个循环和机制。</li>
-                                    <li><strong>小规模用户测试：</strong> 组织内部员工、核心粉丝群体或通过付费测试平台招募少量真实目标用户进行试玩。</li>
-                                    <li><strong>关键数据与反馈收集：</strong> 关注量化数据（如短时留存、核心玩法参与时长/频率、关键任务完成率、用户对核心机制的理解度）和定性反馈（通过观察、访谈、问卷收集用户对乐趣点、困惑点、改进建议）。</li>
-                                    <li><strong>快速迭代循环：</strong> 根据测试数据和反馈，迅速调整原型设计（可能涉及玩法规则、数值、操作、引导等），进行多轮小范围的“开发-测试-学习-调整”循环，直到核心玩法的趣味性和可行性得到初步验证和认可。</li>
+                                    <li><span style="font-weight: bold;">原型搭建：</span> 画面粗糙、功能不全亦可，但必须能让测试者体验到游戏最核心的1-2个循环和机制。</li>
+                                    <li><span style="font-weight: bold;">小规模用户测试：</span> 组织内部员工、核心粉丝群体或通过付费测试平台招募少量真实目标用户进行试玩。</li>
+                                    <li><span style="font-weight: bold;">关键数据与反馈收集：</span> 关注量化数据（如短时留存、核心玩法参与时长/频率、关键任务完成率、用户对核心机制的理解度）和定性反馈（通过观察、访谈、问卷收集用户对乐趣点、困惑点、改进建议）。</li>
+                                    <li><span style="font-weight: bold;">快速迭代循环：</span> 根据测试数据和反馈，迅速调整原型设计（可能涉及玩法规则、数值、操作、引导等），进行多轮小范围的“开发-测试-学习-调整”循环，直到核心玩法的趣味性和可行性得到初步验证和认可。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1567,13 +1786,13 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 当团队对产品的核心概念、美术风格方向或主要卖点存在多个备选方案时，通过小范围、精准定向的 A/B 测试，快速验证市场对不同概念方向的初步反应和接受度。</p>
                                 <ul>
-                                    <li><strong>测试场景与素材：</strong></li>
+                                    <li><span style="font-weight: bold;">测试场景与素材：</span></li>
                                     <ul>
                                         <li>美术风格测试：制作几张代表不同美术风格（如Q版卡通、写实、像素、低多边形等）的概念图、短视频，甚至包括初步的UI界面或角色立绘。</li>
                                         <li>核心卖点测试：撰写几段突出不同核心卖点（如“超高自由度建造”、“与AI伙伴共同经营”、“复古情怀题材”）的宣传文案，或设计简短的玩法机制示意图。</li>
                                     </ul>
-                                    <li><strong>测试执行：</strong> 通过在社交媒体（如微博、微信公众号）、广告平台（如Facebook Ads、Google Ads）进行小额、精准定向的投放。</li>
-                                    <li><strong>数据观测：</strong> 观察不同方案素材的点击率（CTR）、转化率（如模拟预约、跳转详情页）、以及用户评论倾向等数据。</li>
+                                    <li><span style="font-weight: bold;">测试执行：</span> 通过在社交媒体（如微博、微信公众号）、广告平台（如Facebook Ads、Google Ads）进行小额、精准定向的投放。</li>
+                                    <li><span style="font-weight: bold;">数据观测：</span> 观察不同方案素材的点击率（CTR）、转化率（如模拟预约、跳转详情页）、以及用户评论倾向等数据。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1595,7 +1814,6 @@
                                 </ul>
                             </div>
                         </td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
                     </tr>
 
                     <tr>
@@ -1605,14 +1823,14 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 组织跨职能团队进行结构化头脑风暴，运用特定工具引导创意发散，确保讨论高效、产出多元，为项目注入新鲜、可行的创新思路。</p>
                                 <ul>
-                                    <li><strong>团队参与：</strong> 鼓励策划、程序、美术、运营等跨职能成员共同参与，引入多元视角。</li>
-                                    <li><strong>结构化工具运用：</strong></li>
+                                    <li><span style="font-weight: bold;">团队参与：</span> 鼓励策划、程序、美术、运营等跨职能成员共同参与，引入多元视角。</li>
+                                    <li><span style="font-weight: bold;">结构化工具运用：</span></li>
                                     <ul>
-                                        <li><strong>六顶思考帽 (Six Thinking Hats)：</strong> 引导成员从不同角度（事实、情感、批判、乐观、创意、过程控制）思考同一创意点。</li>
-                                        <li><strong>SCAMPER 方法：</strong> 对现有模拟经营游戏或概念，从替代(Substitute)、合并(Combine)、调整(Adapt)、修改(Modify)、挪作他用(Put to another use)、消除(Eliminate)、反转(Reverse)等角度提问，激发新思路。</li>
-                                        <li><strong>限制性创意：</strong> 设定特定限制条件（如“如果只能用一种资源经营城市会怎样？”“如果NPC拥有真实情感和记忆会怎样？”），在限制中寻求突破。</li>
+                                        <li><span style="font-weight: bold;">六顶思考帽 (Six Thinking Hats)：</span> 引导成员从不同角度（事实、情感、批判、乐观、创意、过程控制）思考同一创意点。</li>
+                                        <li><span style="font-weight: bold;">SCAMPER 方法：</span> 对现有模拟经营游戏或概念，从替代(Substitute)、合并(Combine)、调整(Adapt)、修改(Modify)、挪作他用(Put to another use)、消除(Eliminate)、反转(Reverse)等角度提问，激发新思路。</li>
+                                        <li><span style="font-weight: bold;">限制性创意：</span> 设定特定限制条件（如“如果只能用一种资源经营城市会怎样？”“如果NPC拥有真实情感和记忆会怎样？”），在限制中寻求突破。</li>
                                     </ul>
-                                    <li><strong>氛围营造：</strong> 确保讨论氛围开放、平等，鼓励大胆想象，对所有点子先记录、不评判。</li>
+                                    <li><span style="font-weight: bold;">氛围营造：</span> 确保讨论氛围开放、平等，鼓励大胆想象，对所有点子先记录、不评判。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1638,7 +1856,7 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 头脑风暴产生大量创意后，需建立一套多维度的评估标准，对这些创意进行系统化筛选和收敛，最终选定最具潜力和可行性的核心创意方向，进入后续的深度设计和原型验证。</p>
                                 <ul>
-                                    <li><strong>多维度评估标准：</strong></li>
+                                    <li><span style="font-weight: bold;">多维度评估标准：</span></li>
                                     <ul>
                                         <li>创新性与独特性：该创意在市场上的新颖程度，是否具备差异化优势。</li>
                                         <li>市场潜力与用户吸引力：目标用户是否会为此买单，市场规模预估，对用户痛点的解决程度。</li>
@@ -1647,7 +1865,7 @@
                                         <li>商业价值与投入产出比：盈利模式清晰度，营收目标潜力。</li>
                                         <li>可扩展性与长线运营潜力：是否能支撑持续内容更新、系统迭代及社区发展。</li>
                                     </ul>
-                                    <li><strong>筛选机制：</strong> 可采用打分制、投票制、优先级排序或矩阵分析（如“创新性-可行性”二维矩阵）等方式，逐步收敛创意。</li>
+                                    <li><span style="font-weight: bold;">筛选机制：</span> 可采用打分制、投票制、优先级排序或矩阵分析（如“创新性-可行性”二维矩阵）等方式，逐步收敛创意。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1672,10 +1890,10 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 组织关键决策者和核心团队召开正式的立项评审会议，对最终入围的备选方案进行全面审视和讨论，以达成科学、审慎且获得广泛共识的立项决策。</p>
                                 <ul>
-                                    <li><strong>会议准备：</strong> 方案提出者需充分阐述前期分析结果，包括概念、市场分析、核心玩法、技术方案、商业模式、风险评估等关键要素。</li>
-                                    <li><strong>深度讨论与辩论：</strong> 与会者进行充分的提问、质疑、讨论和辩论，确保每个方案的利弊和潜在影响都得到全面审视，挖掘盲点。</li>
-                                    <li><strong>决策依据整合：</strong> 最终决策应综合前期用户调研数据、市场分析、原型测试结果（如有），并结合团队的集体智慧与公司战略判断。</li>
-                                    <li><strong>确保透明与共识：</strong> 决策过程应保持透明，并努力争取主要参与者的共识和内部买入，为项目的顺利启动和后续执行奠定基础。</li>
+                                    <li><span style="font-weight: bold;">会议准备：</span> 方案提出者需充分阐述前期分析结果，包括概念、市场分析、核心玩法、技术方案、商业模式、风险评估等关键要素。</li>
+                                    <li><span style="font-weight: bold;">深度讨论与辩论：</span> 与会者进行充分的提问、质疑、讨论和辩论，确保每个方案的利弊和潜在影响都得到全面审视，挖掘盲点。</li>
+                                    <li><span style="font-weight: bold;">决策依据整合：</span> 最终决策应综合前期用户调研数据、市场分析、原型测试结果（如有），并结合团队的集体智慧与公司战略判断。</li>
+                                    <li><span style="font-weight: bold;">确保透明与共识：</span> 决策过程应保持透明，并努力争取主要参与者的共识和内部买入，为项目的顺利启动和后续执行奠定基础。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1696,7 +1914,6 @@
                                 </ul>
                             </div>
                         </td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
                     </tr>
 
                     <tr>
@@ -1706,24 +1923,24 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 在立项阶段就系统性地识别、评估、规划和监控潜在风险，从而预判挑战、制定应对策略，降低项目失败的可能性。</p>
                                 <ul>
-                                    <li><strong>风险识别：</strong> 全面梳理并记录项目可能面临的各类风险，包括但不限于：</li>
+                                    <li><span style="font-weight: bold;">风险识别：</span> 全面梳理并记录项目可能面临的各类风险，包括但不限于：</li>
                                     <ul>
-                                        <li><strong>市场风险：</strong> 政策变动、竞品颠覆、用户口味转变、新兴技术冲击。</li>
-                                        <li><strong>产品风险：</strong> 玩法吸引力不足、数值经济失衡、创新点未被认可、商业化不佳、内容消耗快。</li>
-                                        <li><strong>技术风险：</strong> 关键技术瓶颈、服务器承压、严重BUG/性能/安全问题。</li>
-                                        <li><strong>团队风险：</strong> 核心成员流失、内部矛盾、执行力下降、外部合作问题。</li>
-                                        <li><strong>资金风险：</strong> 融资困难、成本超支、现金流断裂、投资方撤资。</li>
+                                        <li>市场风险：政策变动、竞品颠覆、用户口味转变、新兴技术冲击。</li>
+                                        <li>产品风险：玩法吸引力不足、数值经济失衡、创新点未被认可、商业化不佳、内容消耗快。</li>
+                                        <li>技术风险：关键技术瓶颈、服务器承压、严重BUG/性能/安全问题。</li>
+                                        <li>团队风险：核心成员流失、内部矛盾、执行力下降、外部合作问题。</li>
+                                        <li>资金风险：融资困难、成本超支、现金流断裂、投资方撤资。</li>
                                     </ul>
-                                    <li><strong>风险评估与优先级排序：</strong> 对识别出的风险进行概率和影响程度评估（如高/中/低等级或数值打分），确定优先级，集中资源应对高风险点。</li>
-                                    <li><strong>应对策略制定：</strong> 为高优先级风险制定具体的规避、缓解或应急措施（Plan B），并明确触发条件。例如：</li>
+                                    <li><span style="font-weight: bold;">风险评估与优先级排序：</span> 对识别出的风险进行概率和影响程度评估（如高/中/低等级或数值打分），确定优先级，集中资源应对高风险点。</li>
+                                    <li><span style="font-weight: bold;">应对策略制定：</span> 为高优先级风险制定具体的规避、缓解或应急措施（Plan B），并明确触发条件。例如：</li>
                                     <ul>
                                         <li>核心玩法数据不佳：准备调整方向或备选核心机制。</li>
                                         <li>遭遇强力竞品：制定差异化竞争策略或调整市场定位。</li>
                                         <li>关键技术人员离职：规划知识交接流程和后备人选。</li>
                                         <li>融资不顺：预案削减开支、调整研发范围或寻求其他资金来源。</li>
                                     </ul>
-                                    <li><strong>风险监控与沟通：</strong> 建立定期的风险审查会议、关键指标（KPI）预警系统等动态监控机制，并明确责任人。同时，保持团队内部及与外部利益相关者（如投资人、发行商）的透明沟通。</li>
-                                    <li><strong>预留缓冲：</strong> 在项目研发周期和预算中预留足够的时间和资金缓冲（Contingency Buffer），以应对未预见的困难或风险事件。</li>
+                                    <li><span style="font-weight: bold;">风险监控与沟通：</span> 建立定期的风险审查会议、关键指标（KPI）预警系统等动态监控机制，并明确责任人。同时，保持团队内部及与外部利益相关者（如投资人、发行商）的透明沟通。</li>
+                                    <li><span style="font-weight: bold;">预留缓冲：</span> 在项目研发周期和预算中预留足够的时间和资金缓冲（Contingency Buffer），以应对未预见的困难或风险事件。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1748,11 +1965,11 @@
                             <div class="core-method-description">
                                 <p><strong>核心方法：</strong> 倡导小步快跑、持续学习和快速适应变化的开发理念。尤其在模拟经营游戏这种系统复杂且玩家反馈至关重要的品类中，通过持续的迭代来验证假设、优化产品。</p>
                                 <ul>
-                                    <li><strong>小周期开发：</strong> 将项目分解为更小的、可管理的工作单元和短周期迭代（如Sprint），每周期产出可测试的增量版本，确保能快速获得反馈。</li>
-                                    <li><strong>持续反馈与学习：：</strong> 贯穿整个开发过程的内部测试、外部测试（如小范围Alpha/Beta）、数据分析和用户调研，持续收集用户反馈、市场数据，并据此调整方向。</li>
-                                    <li><strong>拥抱变化与灵活适应：</strong> 认识到早期设想可能不完美，敢于根据数据和反馈灵活调整设计和优先级，避免固步自封。将变化视为机会而非障碍。</li>
-                                    <li><strong>最小可行性验证：：</strong> 在各个开发阶段，尤其是在早期，优先验证最核心、风险最高的假设（如核心循环乐趣、商业化可行性），避免过度投入。</li>
-                                    <li><strong>跨职能协作：</strong> 鼓励策划、程序、美术等不同职能团队紧密协作，共同参与决策和解决问题，提高迭代效率。</li>
+                                    <li><span style="font-weight: bold;">小周期开发：</span> 将项目分解为更小的、可管理的工作单元和短周期迭代（如Sprint），每周期产出可测试的增量版本，确保能快速获得反馈。</li>
+                                    <li><span style="font-weight: bold;">持续反馈与学习：：</span> 贯穿整个开发过程的内部测试、外部测试（如小范围Alpha/Beta）、数据分析和用户调研，持续收集用户反馈、市场数据，并据此调整方向。</li>
+                                    <li><span style="font-weight: bold;">拥抱变化与灵活适应：</span> 认识到早期设想可能不完美，敢于根据数据和反馈灵活调整设计和优先级，避免固步自封。将变化视为机会而非障碍。</li>
+                                    <li><span style="font-weight: bold;">最小可行性验证：：</span> 在各个开发阶段，尤其是在早期，优先验证最核心、风险最高的假设（如核心循环乐趣、商业化可行性），避免过度投入。</li>
+                                    <li><span style="font-weight: bold;">跨职能协作：</span> 鼓励策划、程序、美术等不同职能团队紧密协作，共同参与决策和解决问题，提高迭代效率。</li>
                                 </ul>
                             </div>
                             <div class="key-output">
@@ -1779,8 +1996,8 @@
                             <div class="core-method-description">
                                 <p><strong>具体方法：</strong> 在立项之初，就应组织团队(特别是经验丰富的核心成员)进行一次彻底的风险研判。尽可能列出所有能预想到的潜在风险(参考前文检查清单中的风险分类)。然后，对每一项风险，从两个维度进行评估：</p>
                                 <ul>
-                                    <li><strong>发生概率(Likelihood) ：</strong> 该风险发生的可能性有多大(如：高、中、低，或1-5分)。</li>
-                                    <li><strong>影响程度(Impact)：</strong> 一旦该风险发生，对项目造成的负面影响有多严重(如：高、中、低，或1-5分)。</li>
+                                    <li><span style="font-weight: bold;">发生概率(Likelihood) ：</span> 该风险发生的可能性有多大(如：高、中、低，或1-5分)。</li>
+                                    <li><span style="font-weight: bold;">影响程度(Impact)：</span> 一旦该风险发生，对项目造成的负面影响有多严重(如：高、中、低，或1-5分)。</li>
                                 </ul>
                                 <p>可以制作风险矩阵图 (Probability-Impact Matrix)，将所有风险点在图上进行可视化标记，从而清晰识别出那些”高概率-高影响”的重点关注风险。</p>
                             </div>
@@ -1789,10 +2006,10 @@
                             <div class="core-method-description">
                                 <p><strong>具体方法：</strong> 针对识别出的重点风险，团队需要提前思考并制定具体的应对措施或缓解策略。例如：</p>
                                 <ul>
-                                    <li><strong>规避(Avoid)：</strong> 通过改变计划或方案，完全消除某个风险(如放弃一个技术上不成熟的玩法)。</li>
-                                    <li><strong>转移(Transfer)：</strong> 将风险部分或全部转移给第三方 (如为关键技术难题寻求外包支持，或购买相关保险)。</li>
-                                    <li><strong>缓解(Mitigate)：</strong> 采取措施降低风险发生的概率或减轻其影响(如加强核心人员的备份和知识共享，以应对人员流失风险；在设计初期就考虑多种变现手段，以应对单一商业模式失败的风险)。</li>
-                                    <li><strong>接受(Accept)：</strong> 对于一些概率较低或影响较小的风险，或经过评估后认为应对成本过高的风险，团队可能选择有意识地接受，并准备好在发生时进行处理。</li>
+                                    <li><span style="font-weight: bold;">规避(Avoid)：</span> 通过改变计划或方案，完全消除某个风险(如放弃一个技术上不成熟的玩法)。</li>
+                                    <li><span style="font-weight: bold;">转移(Transfer)：</span> 将风险部分或全部转移给第三方 (如为关键技术难题寻求外包支持，或购买相关保险)。</li>
+                                    <li><span style="font-weight: bold;">缓解(Mitigate)：</span> 采取措施降低风险发生的概率或减轻其影响(如加强核心人员的备份和知识共享，以应对人员流失风险；在设计初期就考虑多种变现手段，以应对单一商业模式失败的风险)。</li>
+                                    <li><span style="font-weight: bold;">接受(Accept)：</span> 对于一些概率较低或影响较小的风险，或经过评估后认为应对成本过高的风险，团队可能选择有意识地接受，并准备好在发生时进行处理。</li>
                                 </ul>
                                 <p>关键在于将风险管理从被动应对转变为主动规划。</p>
                             </div>
@@ -1803,7 +2020,6 @@
                                 <p>因此，要秉持敏捷开发的思想，通过”小步快跑、持续反馈、快速调整”的循环来应对这种不确定性。强调”Fail fast， learn fast”(快速失败，快速学习)的文化，鼓励团队在早期通过原型、测试、数据分析等手段，勇敢地验证核心假设，即使结果是否定的，也能从中吸取教训，及时调整方向，避免在错误的道路上越走越远。这种迭代思维是降低整体项目风险的有效途径。</p>
                             </div>
                         </td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
                     </tr>
 
                     <tr>
@@ -1812,31 +2028,31 @@
                             <h4><span class="core-method-title">核心文档清单与作用说明：</span></h4>
                             <div class="core-method-description">
                                 <ul>
-                                    <li><strong>市场调研报告 (Market Research Report)：</strong>
+                                    <li><span style="font-weight: bold;">市场调研报告 (Market Research Report)：</span>
                                         <ul>
                                             <li>内容：目标市场规模与趋势分析、核心用户画像与需求洞察、主要竞品(至少2-3款)的深度拆解(玩法、美术、商业模式、优缺点等)、细分赛道机会与风险评估。</li>
                                             <li>作用：为产品定位、差异化策略、核心玩法设计提供客观依据。</li>
                                         </ul>
                                     </li>
-                                    <li><strong>游戏概念文档 (Game Concept Document / GDD Lite)：</strong>
+                                    <li><span style="font-weight: bold;">游戏概念文档 (Game Concept Document / GDD Lite)：</span>
                                         <ul>
                                             <li>内容：清晰阐述游戏的核心理念(一句话概括)、目标用户群体、核心玩法循环与主要特色机制、初步的美术风格方向、初步的商业模式设想、以及产品愿景。通常较为精炼，3-10页。</li>
                                             <li>作用：团队内部对齐产品方向的基石，也是与其他合作方(如投资人、发行商)初步沟通的蓝本。</li>
                                         </ul>
                                     </li>
-                                    <li><strong>高阶设计文档 (High-Level Design Document - HLDD) (可选，或融入GDD)：</strong>
+                                    <li><span style="font-weight: bold;">高阶设计文档 (High-Level Design Document - HLDD) (可选，或融入GDD)：</span>
                                         <ul>
                                             <li>内容：对GDD中提出的核心系统和玩法机制进行更细化一些的初步设计描述，可能包括关键系统的流程图、核心数值框架的初步设想、主要交互界面草图等。</li>
                                             <li>作用：帮助程序和美术团队更好地理解策划意图，为后续原型开发或详细设计提供指引。</li>
                                         </ul>
                                     </li>
-                                    <li><strong>初步商业计划书 (Initial Business Plan)：</strong>
+                                    <li><span style="font-weight: bold;">初步商业计划书 (Initial Business Plan)：</span>
                                         <ul>
                                             <li>内容：包含项目定位与市场机会分析、产品核心价值主张、目标用户与市场规模、盈利模式与营收预测(初步)、研发时间表与成本预估、核心团队介绍、主要风险分析与应对策略、市场推广初步策略(如有)等。</li>
                                             <li>作用：主要用于内部决策审批，或在寻求外部融资时向投资方展示项目潜力和可行性。</li>
                                         </ul>
                                     </li>
-                                    <li><strong>原型演示与反馈报告 (Playable Prototype Demo & Feedback Report) (如果进行了原型开发)：</strong>
+                                    <li><span style="font-weight: bold;">原型演示与反馈报告 (Playable Prototype Demo & Feedback Report) (如果进行了原型开发)：</span>
                                         <ul>
                                             <li>内容：可玩原型的功能演示(视频或可执行文件)、设计目标说明、小范围用户测试(或内部评审)收集到的关键数据(如留存、参与度)、定性反馈(乐趣点、痛点、建议)的总结与分析，以及基于反馈的下一步迭代计划。</li>
                                             <li>作用：验证核心玩法的可行性与趣味性，为后续开发决策提供数据支持。</li>
@@ -1847,28 +2063,27 @@
                             <h4>常用辅助工具推荐与简述：</h4>
                             <div class="core-method-description">
                                 <ul>
-                                    <li><strong>协作与文档管理：</strong> 飞书、Notion、Confluence、钉钉文档、Google Workspace，Microsoft Teams
+                                    <li><span style="font-weight: bold;">协作与文档管理：</span> 飞书、Notion、Confluence、钉钉文档、Google Workspace，Microsoft Teams
                                         <p>主要用途：团队知识库构建、文档撰写、版本控制、信息共享、评论与反馈。</p>
                                     </li>
-                                    <li><strong>项目管理与任务跟踪：</strong> JIRA，Asana，Trello，Monday.com，ONES，ClickUp，Teambition
+                                    <li><span style="font-weight: bold;">项目管理与任务跟踪：</span> JIRA，Asana，Trello，Monday.com，ONES，ClickUp，Teambition
                                         <p>主要用途：规划立项阶段的各项任务、明确责任人、跟踪进度、管理时间表、识别瓶颈。</p>
                                     </li>
-                                    <li><strong>思维导图与流程图：</strong> XMind，MindManager，Figma (FigJam)，Miro，draw.io(diagrams.net)，Whimsical
+                                    <li><span style="font-weight: bold;">思维导图与流程图：</span> XMind，MindManager，Figma (FigJam)，Miro，draw.io(diagrams.net)，Whimsical
                                         <p>主要用途：梳理创意、组织信息架构、绘制用户流程图、系统逻辑图、竞品分析结构图。</p>
                                     </li>
-                                    <li><strong>原型制作：</strong> Axure RP(高保真交互原型)，Figma/Sketch/Adobe XD (界面与视觉原型)，Unity/Unreal Engine/Cocos Creator(快速功能与玩法原型)，Balsamiq(低保真线框图)
+                                    <li><span style="font-weight: bold;">原型制作：</span> Axure RP(高保真交互原型)，Figma/Sketch/Adobe XD (界面与视觉原型)，Unity/Unreal Engine/Cocos Creator(快速功能与玩法原型)，Balsamiq(低保真线框图)
                                         <p>主要用途：根据需求选择合适的工具快速搭建可交互或可视化的原型，用于验证设计和收集反馈。</p>
                                     </li>
-                                    <li><strong>数据分析与可视化：</strong> Excel，Google Sheets，Tableau，Power BI(用于早期市场数据整理与分析)，专业游戏数据分析平台如ThinkingAnalytics，Amplitude，Mixpanel(用于后期原型测试数据深度分析)
+                                    <li><span style="font-weight: bold;">数据分析与可视化：</span> Excel，Google Sheets，Tableau，Power BI(用于早期市场数据整理与分析)，专业游戏数据分析平台如ThinkingAnalytics，Amplitude，Mixpanel(用于后期原型测试数据深度分析)
                                         <p>主要用途：处理调研数据、市场数据，进行可视化呈现，洞察数据背后的含义。</p>
                                     </li>
-                                    <li><strong>用户调研与反馈收集：</strong> 问卷星，SurveyMonkey，Google Forms，Typeform (在线问卷)，Zoom/腾讯会议(远程访谈)，Otter.ai(语音转文字)，Dovetail(用户研究数据管理)
+                                    <li><span style="font-weight: bold;">用户调研与反馈收集：</span> 问卷星，SurveyMonkey，Google Forms，Typeform (在线问卷)，Zoom/腾讯会议(远程访谈)，Otter.ai(语音转文字)，Dovetail(用户研究数据管理)
                                         <p>主要用途：设计和分发问卷，进行用户访谈的录音与记录，系统化管理和分析用户反馈。</p>
                                     </li>
                                 </ul>
                             </div>
                         </td>
-                        <td><select class="evaluation-select"><option value="">请选择</option><option value="pass">已完成</option><option value="pending">进行中</option><option value="fail">未开始/待改善</option></select></td>
                     </tr>
                 </tbody>
             </table>
@@ -1876,7 +2091,7 @@
         
         <div class="summary-section">
             <h2>评估总结与决策建议</h2>
-            <textarea class="final-summary-textarea" placeholder="在此处填写对整个立项评估的综合总结，包括项目的整体优势、劣势、机遇、挑战，以及最终的立项决策建议（如：立即启动、需补充调研、暂缓或放弃等）。"></textarea>
+            <textarea class="final-summary-textarea" placeholder="在此处填写对整个立项评估的综合总结，包括项目的整体优势、劣势、机遇、挑战，以及最终的立项决策建议（如：立即启动、需补充调研、暂缓或放弃等）。" aria-label="评估总结与决策建议"></textarea>
         </div>
         
         <div class="status-bar">
@@ -1894,6 +2109,8 @@
         const inProgressCountElement = document.getElementById('inProgressCount');
         const pendingCountElement = document.getElementById('pendingCount');
         const lastSavedTimeElement = document.getElementById('lastSavedTime');
+
+        let saveTimeout; // Debounce variable
 
         // Function to update the progress numbers
         function updateProgress() {
@@ -1972,7 +2189,7 @@
                     select.addEventListener('change', function() {
                         updateStatusIndicator(this);
                         updateProgress();
-                        saveFormData(); // Save on change
+                        debounceSaveFormData(); // Use debounced save
                     });
                     select._hasChangeListener = true;
                 }
@@ -1981,7 +2198,7 @@
             // Handle textareas specifically for saving (only for main tables)
             document.querySelectorAll('table:not(.methodology-table) .notes-textarea, .final-summary-textarea').forEach(textarea => {
                 if (!textarea._hasInputListener) {
-                    textarea.addEventListener('input', saveFormData);
+                    textarea.addEventListener('input', debounceSaveFormData);
                     textarea._hasInputListener = true;
                 }
             });
@@ -2001,6 +2218,13 @@
                 }
             }
         }
+
+        // Update all status indicators (useful on page load)
+        function updateAllStatusIndicators() {
+            document.querySelectorAll('.evaluation-select').forEach(select => {
+                updateStatusIndicator(select);
+            });
+        }
         
         // Update last saved time display
         function updateLastSavedTime() {
@@ -2014,6 +2238,12 @@
             lastSavedTimeElement.textContent = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
         }
 
+        // Debounced function for saving form data
+        function debounceSaveFormData() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveFormData, 1000); // Save after 1 second of inactivity
+        }
+
         // Save form data to localStorage
         function saveFormData() {
             const formData = {};
@@ -2023,7 +2253,6 @@
             document.querySelectorAll('textarea.notes-textarea').forEach((textarea, index) => {
                 formData[`textarea_${index}`] = textarea.value;
             });
-            // No need to save .methodology-content as it's static
             formData['finalSummary'] = document.querySelector('.final-summary-textarea').value;
             localStorage.setItem('projectChecklistData', JSON.stringify(formData));
             updateLastSavedTime();
@@ -2053,10 +2282,12 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadFormData(); // Load any previously saved data
-            addStatusIndicators(); // Attach indicators and event listeners based on loaded data
+            updateAllStatusIndicators(); // Update all indicators based on loaded data
+            addStatusIndicators(); // Attach event listeners
             updateProgress(); // Update progress numbers
             updateLastSavedTime(); // Set initial save time
         });
     </script>
 </body>
 </html>
+
