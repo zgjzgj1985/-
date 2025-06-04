@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小团队手机游戏立项流程清单</title>
-    <!-- 引入 Font Awesome 图标库，用于链接旁边的图标 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -60,6 +58,27 @@
             font-size: 1.2em;
             flex-shrink: 0;
         }
+        /* Styling for nested lists (the '产出' details) */
+        ul li ul {
+            padding-left: 0; /* Remove default padding */
+            list-style: none; /* Ensure no default bullets */
+            flex-grow: 1; /* Allow it to take available space */
+        }
+        ul li ul li {
+            background: #f8f9fa; /* Lighter background for nested lists */
+            padding: 8px 10px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            border-left: 3px solid #6c757d; /* Darker border for nested lists */
+            box-shadow: none; /* Remove shadow for nested lists */
+            display: block; /* Change back to block for full width */
+        }
+        ul li ul li::before {
+            content: '•'; /* Bullet for nested lists */
+            color: #6c757d;
+            font-size: 1em;
+            margin-right: 8px;
+        }
         strong {
             color: #555;
         }
@@ -80,50 +99,20 @@
             border-radius: 5px;
             color: #664d03;
         }
-        /* 新增样式：用于跳转到高级清单的区域和按钮 */
-        .link-section {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px dashed #ccc;
-            text-align: center;
-        }
-        .link-section p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            color: #555;
-        }
-        .new-checklist-button {
-            display: inline-block;
-            padding: 12px 25px;
-            background-color: #007bff; /* 与 section title 保持一致的蓝色 */
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-            font-size: 1em;
-            display: flex; /* 让图标和文字在一条线上 */
-            align-items: center; /* 垂直居中 */
-            justify-content: center; /* 水平居中 */
-            gap: 10px; /* 图标和文字的间距 */
-            max-width: 400px; /* 控制按钮最大宽度 */
-            margin: auto; /* 居中按钮 */
-        }
-        .new-checklist-button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
-        }
-        .new-checklist-button i {
-            margin-left: 0; /* 重置可能继承的 margin-left */
+        .general-note {
+            background-color: #d1ecf1; /* Light blue for general notes */
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 5px;
+            color: #0c5460;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>小团队手机游戏立项流程清单</h1>
-        <p>此清单旨在为小团队提供一个高效、实用的手机游戏立项流程。重点在于快速验证核心玩法和市场可行性，避免资源浪费。</p>
+        <p>此清单旨在为小团队提供一个高效、实用的手机游戏立项流程。重点在于快速验证核心玩法和市场可行性，避免资源浪费。<em>在整个过程中，美术、策划、程序等不同职能的成员应紧密协作，共同推动项目进展。</em></p>
 
         <h2>第一阶段：概念与市场验证 (Idea & Market Validation)</h2>
         <p>在投入任何实际开发之前，确保你的想法有市场，并且你的团队有能力实现。</p>
@@ -149,16 +138,28 @@
                     <li>识别潜在的技能或资源缺口。</li>
                 </ul>
             </li>
+            <li><strong>美术前期参与与探索：</strong>
+                <ul>
+                    <li><strong>视觉概念辅助与沟通：</strong> 协助团队收集或创建情绪板（Mood Board），包含图片、色彩、光照、材质等，以传达游戏潜在的视觉氛围和感受。针对核心玩法或角色，绘制非常粗糙的概念草图（如简单玩法示意图、角色剪影），将抽象概念具象化，辅助团队讨论和理解游戏愿景。</li>
+                    <li><strong>竞品视觉分析：</strong> 深入分析竞品的游戏画面、UI/UX、角色设计、特效等，识别其视觉上的优缺点，寻找潜在的差异化方向，为游戏的独特卖点（USP）提供视觉上的可能性。</li>
+                    <li><strong>美术可行性初步评估：</strong> 结合团队现有美术能力，初步评估某些复杂美术风格的实现难度和潜在成本，为后续的技术栈选择和资源规划提供美术维度上的参考。</li>
+                </ul>
+            </li>
             <li><strong>初步商业模式设计：</strong>
                 <ul>
                     <li>考虑主要盈利点：买断制、内购、广告、订阅等。</li>
                     <li>估算大致的开发周期和成本。</li>
                 </ul>
             </li>
-            <li><strong>产出：</strong>一份简洁的<strong>项目概念书</strong>（Concept Document），包含核心想法、目标市场、简单竞品分析和初步商业模式。</li>
+            <li><strong>产出：</strong>
+                <ul>
+                    <li>一份简洁的<strong>项目概念书</strong>（Concept Document），包含核心想法、目标市场、简单竞品分析和初步商业模式。</li>
+                    <li><em>初步的视觉参考资料和美术风格探讨结果</em>。</li>
+                </ul>
+            </li>
         </ul>
         <div class="note">
-            <em>小团队提示：</em> 这一阶段的文档不必过于详细，关键是把核心想法、目标、以及实现它的可行性想清楚。
+            <em>小团队提示：</em> 这一阶段的文档和美术工作不必过于详细或精细，关键是把核心想法、目标、以及实现它的可行性想清楚。美术工作重在概念探索和辅助沟通。
         </div>
 
         <h2>第二阶段：核心玩法原型与技术验证 (Core Gameplay Prototype & Tech Validation)</h2>
@@ -184,6 +185,13 @@
                     <li>重点在于可玩性、交互流畅性、基础性能。</li>
                 </ul>
             </li>
+            <li><strong>美术占位符与技术预研：</strong>
+                <ul>
+                    <li><strong>制作占位符（Placeholder）美术资产：</strong> 快速制作满足原型功能需求的、粗糙的、极简化的美术资源（如简单的方块模型、纯色纹理、临时UI图标等）。核心目标是清晰地传达玩法信息和交互点，不追求美观。</li>
+                    <li><strong>技术美术预研与验证：</strong> 将占位符资产导入选定的游戏引擎，测试导入流程、材质渲染、灯光系统等是否符合预期。初步评估它们在移动设备上的渲染性能（如面数、Draw Call）。协助程序搭建从美术资产创作到导入引擎的初步工作流程。</li>
+                    <li><strong>参与原型测试与反馈：</strong> 积极参与内部测试，从美术角度评估原型的视觉清晰度、信息传递效率和交互体验，提出美术表现上的初步改进建议，以增强核心玩法的乐趣。</li>
+                </ul>
+            </li>
             <li><strong>内部测试与初步反馈：</strong>
                 <ul>
                     <li>团队内部成员进行大量试玩和讨论。</li>
@@ -191,91 +199,118 @@
                     <li><em>必要时</em>邀请少数核心用户或朋友试玩，获取初步外部反馈。</li>
                 </ul>
             </li>
-            <li><strong>产出：：</strong>一个<strong>可玩的核心玩法原型</strong>，一份<strong>技术可行性报告</strong>。</li>
+            <li><strong>产出：</strong>
+                <ul>
+                    <li>一个<strong>可玩的核心玩法原型</strong>。</li>
+                    <li>一份<strong>技术可行性报告</strong>。</li>
+                    <li><em>大量用于验证的占位符美术资产及初步的美术技术测试报告</em>。</li>
+                </ul>
+            </li>
         </ul>
         <div class="note">
-            <em>小团队提示：</em> 这个原型应尽可能简单粗糙，避免在非核心元素上浪费时间。快速失败总比缓慢失败好。
+            <em>小团队提示：</em> 这个原型和其美术资产应尽可能简单粗糙，避免在非核心元素上浪费时间。快速失败总比缓慢失败好，美术工作应服务于核心玩法的验证。
         </div>
 
         <h2>第三阶段：项目规划与预生产 (Project Planning & Pre-Production)</h2>
         <p>在确认核心玩法可行后，进行详细的规划，为全面生产做好准备。</p>
         <ul>
-            <li><strong>游戏设计文档精简版 (Lean GDD)：：</strong>
+            <li><strong>游戏设计文档精简版 (Lean GDD)：</strong>
                 <ul>
                     <li>基于原型反馈，完善核心玩法设计。</li>
                     <li>明确游戏系统、角色、关卡、美术风格、音效等的基础设定。</li>
                     <li>对于小团队，可以只写关键部分，以图表和示意图为主，保持敏捷。</li>
                 </ul>
             </li>
-            <li><strong>美术与音效风格确立：：</strong>
+            <li><strong>美术与音效风格确立：</strong>
                 <ul>
-                    <li>制作概念图（Concept Art），确定视觉风格。</li>
-                    <li>收集音效和音乐的参考样本。</li>
-                    <li><em>如需要</em>，制作少量关键美术/音效资产。</li>
+                    <li>制作概念图（Concept Art），确定最终视觉风格，并产出风格指南（Style Guide）。</li>
+                    <li>收集音效和音乐的参考样本，确定整体听觉风格。</li>
+                    <li><em>如需要</em>，制作少量关键的、符合最终风格的“标杆”美术/音效资产。</li>
                 </ul>
             </li>
-            <li><strong>详细开发计划与里程碑：：</strong>
+            <li><strong>详细开发计划与里程碑：</strong>
                 <ul>
                     <li>拆分开发任务，分配责任人。</li>
                     <li>制定详细的时间表，设定清晰的阶段性目标（里程碑）。</li>
                     <li>风险评估与应对预案。</li>
                 </ul>
             </li>
-            <li><strong>预算与资源再确认：：</strong>
+            <li><strong>预算与资源再确认：</strong>
                 <ul>
                     <li>根据详细计划，重新估算资金需求。</li>
                     <li>确定所需的外部资源（如外包美术/音效、服务器租用等）。</li>
                     <li>制定团队协作规范和沟通流程。</li>
                 </ul>
             </li>
-            <li><strong>平台与发行策略（初步）：：</strong>
+            <li><strong>平台与发行策略（初步）：</strong>
                 <ul>
                     <li>确定主要发行平台（iOS App Store, Android Google Play等）。</li>
                     <li>考虑游戏的提交要求和审核流程。</li>
                 </ul>
             </li>
-            <li><strong>产出：：</strong><strong>精简版游戏设计文档 (Lean GDD)</strong>，<strong>项目开发计划表</strong>，<strong>详细预算</strong>。</li>
+            <li><strong>产出：</strong>
+                <ul>
+                    <li>一份<strong>精简版游戏设计文档 (Lean GDD)</strong>。</li>
+                    <li>一份<strong>项目开发计划表</strong>。</li>
+                    <li>一份<strong>详细预算</strong>。</li>
+                    <li><em>确定的美术风格指南与少量关键资产</em>。</li>
+                </ul>
+            </li>
         </ul>
         <div class="note">
-            <em>小团队提示：</em> GDD不必面面俱到，重点在于沟通和对齐团队成员对游戏的理解。计划要有弹性，准备好应对变化。
+            <em>小团队提示：</em> GDD不必面面俱到，重点在于沟通和对齐团队成员对游戏的理解。计划要有弹性，准备好应对变化。此阶段是正式投入大量美术资源的开始。
         </div>
 
         <h2>第四阶段：项目启动与持续迭代 (Project Kick-off & Continuous Iteration)</h2>
         <p>正式进入全面生产阶段，并保持敏捷的开发和迭代节奏。</p>
         <ul>
-            <li><strong>正式启动会议：：</strong>
+            <li><strong>正式启动会议：</strong>
                 <ul>
                     <li>团队全体成员对项目目标、计划和各自职责达成共识。</li>
                     <li>确认开发环境和工具链设置完毕。</li>
                 </ul>
             </li>
-            <li><strong>任务管理与每日站会：：</strong>
+            <li><strong>任务管理与每日站会：</strong>
                 <ul>
                     <li>使用Trello、Jira、Asana等工具进行任务追踪。</li>
                     <li>每日短会（Scrum）更新进度，同步信息，解决障碍。</li>
                 </ul>
             </li>
-            <li><strong>持续集成与测试：：</strong>
+            <li><strong>持续集成与测试：</strong>
                 <ul>
                     <li>频繁地整合代码和资源，确保版本稳定。</li>
                     <li>定期进行内部测试和Bug修复。</li>
                 </ul>
             </li>
-            <li><strong>版本迭代与反馈循环：：</strong>
+            <li><strong>版本迭代与反馈循环：</strong>
                 <ul>
                     <li>设定短周期的迭代目标，逐步完善游戏内容。</li>
                     <li>保持开放心态，随时根据测试反馈调整方向。</li>
+                    </ul>
+            </li>
+            <li><strong>产出：</strong>
+                <ul>
+                    <li>一个<strong>高效运转的开发流程</strong>。</li>
+                    <li><strong>持续迭代更新的游戏版本</strong>。</li>
                 </ul>
             </li>
-            <li><strong>产出：：</strong>一个<strong>高效运转的开发流程</strong>，<strong>持续迭代更新的游戏版本</strong>。</li>
         </ul>
         <div class="note">
-            <em>小团队提示：</em> 灵活和适应性是小团队的优势。不要害怕在开发过程中调整或放弃部分非核心内容。
+            <em>小团队提示：</em> 灵活和适应性是小团队的优势。不要害怕在开发过程中调整或放弃部分非核心内容。美术、程序、策划等紧密合作，快速响应。
         </div>
 
-        <p>遵循以上流程，小团队可以在有限的资源下，最大化地验证游戏的可行性，降低开发风险，并最终推出一款有竞争力的手机游戏。</p>
+        <div class="general-note">
+            <strong>重要提醒：</strong> 对于小团队，每个阶段的界限可能并不那么清晰，而是相互交织、同时进行。关键在于：
+            <ol>
+                <li><strong>尽早验证核心：</strong> 不管是核心玩法还是美术风格，都要在投入大量资源前，通过快速迭代和原型验证其可行性。</li>
+                <li><strong>精简沟通：</strong> 利用简洁的文档、原型和面对面交流，确保团队成员对项目有共同的理解。</li>
+                <li><strong>保持敏捷：光有好的想法还不够，能够快速行动并适应变化才是小团队成功的关键。</strong></li>
+                <li><strong>跨职能协作：</strong> 美术、策划、程序等不同背景的成员需持续沟通，共同解决问题。</li>
+            </ol>
+            遵循以上流程，小团队可以在有限的资源下，最大化地验证游戏的可行性，降低开发风险，并最终推出一款有竞争力的手机游戏。
+        </div>
 
-        <!-- 新增内容：跳转到高级清单的链接区域 -->
+	<!-- 新增内容：跳转到高级清单的链接区域 -->
         <div class="link-section">
             <p><strong>💡 想要更详细、更全面的模拟经营游戏立项清单？</strong></p>
             <a href="完整流程.html" class="new-checklist-button">点击查看：模拟经营游戏立项决策清单 (2025优化版) <i class="fas fa-arrow-right"></i></a>
